@@ -7,17 +7,42 @@ body {
 .header-top {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
     background-color: #07173B;
     color: #ffffff;
     padding: 10px;
 }
 
+.header-top .logo-area {
+    display: flex;
+    flex: 0.2;
+    align-items: center;
+}
+
+.logo-area img {
+    height: 50px;
+}
+
+.logo-area h1 {
+    margin-left: 10px;
+    font-size: 24px;
+    background: linear-gradient(90deg, #8d44ff, #2ad3f8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.logo {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
 /* SEARCH BAR */
 
 .header-top-search-bar{
-    width: 40%;
+    flex: 0.5;
     border-radius: 15px;
+    margin: auto;
     padding: 5px;
     border: none;
     background-color: #ffffff;
@@ -48,10 +73,22 @@ body {
 
 /* RIGHT SIDE ICONS */
 
+.header-top-icons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0.2;
+}
+
 .header-top-icons button {
     background-color: transparent;
     border: none;
     cursor: pointer;
+}
+
+.header-top-icons button img {
+    height: 40px;
+    margin-left: 10px;
 }
 
 /* NAVIGATION */
