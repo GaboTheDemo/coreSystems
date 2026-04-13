@@ -4,6 +4,8 @@ body {
     padding: 0;
 }
 
+/* ===== HEADER ===== */
+
 .header-top {
     display: flex;
     align-items: center;
@@ -39,7 +41,7 @@ body {
 
 /* SEARCH BAR */
 
-.header-top-search-bar{
+.header-top-search-bar {
     flex: 0.5;
     border-radius: 15px;
     margin: auto;
@@ -97,6 +99,8 @@ body {
     background-color: #4395AD;
     overflow: hidden;
     text-align: center;
+    display: flex;
+    justify-content: center;
 }
 
 .nav-list {
@@ -117,4 +121,55 @@ body {
 .main-navigation .nav-list .underline a {
     color: #6CEAD2;
     text-decoration: underline;
+}
+
+.main-navigation button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.main-navigation button img {
+    height: 30px;
+    width: 30px;
+}
+
+/* ANNOUNCEMENT BAR */
+
+.announcement-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-image: url('announcement-bar-images/gaming-laptops.png');
+    background-size: cover;
+    color: #ffffff;
+    padding: 11% 50px 11% 50px;
+    font-size: 30px;
+}
+
+.announcement-bar button {
+    position: relative;
+    z-index: 2;
+    background: #000000;
+    opacity: 0.5;
+    border-radius: 100%;
+    height: 50px;
+    width: 50px;
+    border: none;
+    cursor: pointer;
+}
+
+.announcement-bar img {
+    height: 28px;
+    width: 28px;
+}
+
+.announcement-bar .announcement-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
 }
