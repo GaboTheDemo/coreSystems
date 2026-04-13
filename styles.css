@@ -4,7 +4,7 @@ body {
     padding: 0;
 }
 
-/* ===== HEADER ===== */
+
 
 .header-top {
     display: flex;
@@ -39,7 +39,7 @@ body {
     cursor: pointer;
 }
 
-/* SEARCH BAR */
+
 
 .header-top-search-bar {
     flex: 0.5;
@@ -72,7 +72,7 @@ body {
     height: 20px;
 }
 
-/* RIGHT SIDE ICONS */
+
 
 .header-top-icons {
     display: flex;
@@ -92,7 +92,7 @@ body {
     margin-left: 10px;
 }
 
-/* NAVIGATION */
+
 
 .main-navigation {
     background-color: #4395AD;
@@ -132,7 +132,7 @@ body {
     width: 30px;
 }
 
-/* ANNOUNCEMENT BAR */
+
 
 .announcement-bar {
     position: relative;
@@ -171,18 +171,18 @@ body {
     height: 100%;
 }
 
-/* ===== TU PARTE (MEGA MENU FIX REAL) ===== */
+
 
 .mega-menu {
     position: absolute;
-    top: 100%; /* 👈 ahora depende del header */
+    top: 100%; 
     left: 0;
     width: 100%;
     z-index: 9999;
 }
 
 header {
-    position: relative; /* 🔥 CLAVE REAL (esto faltaba) */
+    position: relative; 
 }
 
 .mega-content {
@@ -197,7 +197,7 @@ header {
     justify-content: space-around;
 }
 
-/* columnas */
+
 .mega-content .column {
     width: 30%;
 }
@@ -219,7 +219,7 @@ header {
     font-weight: bold;
 }
 
-/* activo */
+
 .mega-content.active {
     display: flex;
 }

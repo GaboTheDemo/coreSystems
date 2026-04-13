@@ -6,15 +6,15 @@ var texts = [
   "Search for products... Like a new tablet for your work or school needs!",
 ];
 
-/* placeholder random */
+
 document.getElementById('randomText').value =
   texts[Math.floor(Math.random() * texts.length)];
 
-/* mega menu */
+
 const links = document.querySelectorAll(".nav-list li a");
 const menus = document.querySelectorAll(".mega-content");
 
-/* categorias válidas */
+
 const categorias = [
   "smartphones",
   "laptops",
@@ -27,12 +27,12 @@ const categorias = [
 links.forEach(link => {
   link.addEventListener("mouseenter", () => {
 
-    /* limpiar todos */
+    
     menus.forEach(menu => menu.classList.remove("active"));
 
     const text = link.textContent.toLowerCase().trim();
 
-    /* activar solo si existe */
+    
     if (categorias.includes(text)) {
       document.getElementById(text).classList.add("active");
     }
@@ -40,7 +40,7 @@ links.forEach(link => {
   });
 });
 
-/* cerrar cuando sales */
+
 document.addEventListener("mousemove", (e) => {
   if (!e.target.closest(".mega-menu") && !e.target.closest(".nav-list")) {
     menus.forEach(menu => menu.classList.remove("active"));
