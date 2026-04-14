@@ -213,7 +213,6 @@ function construirHero() {
 
 // =======================
 // FEATURES
-// =======================
 function construirFeatures() {
   const features = document.createElement("section");
   features.classList.add("features");
@@ -221,12 +220,21 @@ function construirFeatures() {
     <h2>Check some of these things out!</h2>
     <div class="features-grid">
       <div class="card"><i data-lucide="box" class="feature-icon"></i><h3>Enter your Location</h3><p>So we know where to send your products.</p></div>
-      <div class="card"><i data-lucide="user" class="feature-icon"></i><h3>Make an Account</h3><p>Access all shopping features.</p></div>
+      <div class="card" id="make-account-card"><i data-lucide="user" class="feature-icon"></i><h3>Make an Account</h3><p>Access all shopping features.</p></div>
       <div class="card"><i data-lucide="clock" class="feature-icon"></i><h3>Free Delivery</h3><p>Check eligible products.</p></div>
       <div class="card"><i data-lucide="zap" class="feature-icon"></i><h3>Most Popular</h3><p>See what everyone is buying.</p></div>
     </div>
   `;
   body.appendChild(features);
+
+  // Redirigir al hacer clic en "Make an Account"
+  const accountCard = document.getElementById("make-account-card");
+  if (accountCard) {
+    accountCard.style.cursor = "pointer";
+    accountCard.addEventListener("click", () => {
+      window.location.href = "login.html";
+    });
+  }
 }
 
 // =======================
@@ -398,16 +406,15 @@ function configurarSimulaciones() {
   const userBtn = document.getElementById("userBtn");
   const cartBtn = document.getElementById("cartBtn");
 
-  if (heartBtn) heartBtn.addEventListener("click", () => alert("❤️ Favoritos en desarrollo."));
+  if (heartBtn) heartBtn.addEventListener("click", () => {
+    window.location.href = "favorites.html";
+  });
   if (userBtn) userBtn.addEventListener("click", () => {
     window.location.href = "login.html";
   });
-  if (cartBtn) cartBtn.addEventListener("click", () => alert("🛒 Carrito en desarrollo."));
-
-  const viewSalesBtn = document.getElementById("viewSalesBtn");
-  const exploreCategoriesBtn = document.getElementById("exploreCategoriesBtn");
-  if (viewSalesBtn) viewSalesBtn.addEventListener("click", () => alert("📢 Ver Ofertas en desarrollo."));
-  if (exploreCategoriesBtn) exploreCategoriesBtn.addEventListener("click", () => alert("🔍 Explorar Categorías en desarrollo."));
+  if (cartBtn) cartBtn.addEventListener("click", () => {
+    window.location.href = "cart.html";
+  });
 
   document.querySelectorAll(".simulate-link").forEach(link => {
     link.addEventListener("click", (e) => {
