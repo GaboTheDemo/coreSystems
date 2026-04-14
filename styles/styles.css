@@ -264,6 +264,10 @@ body {
   border-top: 3px solid #3dd6c6;
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   flex-direction: row;
+  width: 100%;           /* Ocupa todo el ancho disponible */
+  max-width: 100vw;      /* Evita desbordes */
+  overflow-x: auto;      /* Scroll horizontal si el contenido es muy ancho */
+  box-sizing: border-box;
 }
 
 .nav-item:hover .mega-panel {
@@ -272,14 +276,18 @@ body {
 
 .mega-left {
   display: flex;
-  gap: 20px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 40px;
   flex: 2;
   border-right: 1px solid rgba(255,255,255,0.15);
   padding-right: 20px;
 }
 
 .mega-col {
-  min-width: 140px;
+  min-width: 180px;      /* Evita que las columnas se compriman */
+  max-width: 260px;
+  flex: 1 1 auto;
 }
 
 .mega-col h4 {
@@ -291,15 +299,39 @@ body {
   letter-spacing: 0.5px;
 }
 
-.mega-col p {
-  font-size: 12px;
-  color: rgba(255,255,255,0.75);
-  line-height: 1.8;
+/* Items horizontales con separador "|" */
+.mega-items {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 8px;
+  align-items: center;
 }
 
+.mega-item {
+  display: inline;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mega-item:not(:last-child)::after {
+  content: "|";
+  margin-left: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.mega-item:hover {
+  color: #3dd6c6;
+}
+
+/* Columnas de accesorios y "More" */
 .mega-mid, .mega-right {
   flex: 1;
   padding-left: 20px;
+  min-width: 200px;
 }
 
 .mega-mid h4, .mega-right h4 {
@@ -511,7 +543,7 @@ body {
 }
 
 /* =======================
-   PRODUCTOS (GRID ORIGINAL - ESTILO NORMAL)
+   PRODUCTOS (GRID ORIGINAL)
 ======================= */
 .products {
   max-width: 1200px;
@@ -578,7 +610,7 @@ body {
 }
 
 /* =======================
-   RESPONSIVE
+   RESPONSIVE (sin flex-direction: column en .mega-left)
 ======================= */
 @media (max-width: 900px) {
   .features-grid,
@@ -591,8 +623,9 @@ body {
   .nav-categories {
     display: none;
   }
+  /* No forzamos columna en .mega-left */
   .mega-left {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
 }
 
@@ -608,5 +641,15 @@ body {
     left: 0;
     top: 100%;
     min-width: 90vw;
+  }
+}
+
+/* Ajustes para pantallas grandes */
+@media (min-width: 1400px) {
+  .mega-left {
+    gap: 50px;
+  }
+  .mega-col {
+    min-width: 220px;
   }
 }

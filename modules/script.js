@@ -29,7 +29,7 @@ async function iniciarPagina() {
     construirHeader();
     construirHero();
     construirFeatures();
-    construirCarruselGrid();  // Nuevo: carrusel con el estilo grid original
+    construirCarruselGrid();
 
     configurarEventos();
     configurarSimulaciones();
@@ -42,7 +42,7 @@ async function iniciarPagina() {
 }
 
 // =======================
-// HEADER (igual que antes)
+// HEADER (con megamenú corregido)
 // =======================
 function construirHeader() {
   const header = document.createElement("header");
@@ -85,25 +85,36 @@ function construirHeader() {
   categorias.forEach(cat => {
     const li = document.createElement("li");
     li.classList.add("nav-item");
-    li.textContent = cat;
+    li.textContent = cat;   // ← Solo el nombre en la pestaña, no dentro del panel
 
     if (megaMenuData[cat]) {
       const data = megaMenuData[cat];
       const panel = document.createElement("div");
       panel.classList.add("mega-panel");
 
+      // Columna izquierda (marcas, capacidad, RAM)
       const left = document.createElement("div");
       left.classList.add("mega-left");
       data.columns.forEach(col => {
         const colDiv = document.createElement("div");
         colDiv.classList.add("mega-col");
         colDiv.innerHTML = `<h4>${col.title}</h4>`;
-        const p = document.createElement("p");
-        p.textContent = col.items.join(" | ");
-        colDiv.appendChild(p);
+        
+        const itemsContainer = document.createElement("div");
+        itemsContainer.classList.add("mega-items");
+        
+        col.items.forEach(item => {
+          const itemSpan = document.createElement("span");
+          itemSpan.classList.add("mega-item");
+          itemSpan.textContent = item;
+          itemsContainer.appendChild(itemSpan);
+        });
+        
+        colDiv.appendChild(itemsContainer);
         left.appendChild(colDiv);
       });
 
+      // Columna central (Accesorios)
       const mid = document.createElement("div");
       mid.classList.add("mega-mid");
       mid.innerHTML = `
@@ -112,6 +123,7 @@ function construirHeader() {
         ${data.accessories.items.map(i => `<a href="#" class="simulate-link">${i}</a>`).join("")}
       `;
 
+      // Columna derecha (More)
       const right = document.createElement("div");
       right.classList.add("mega-right");
       right.innerHTML = `
@@ -218,7 +230,7 @@ function construirFeatures() {
 }
 
 // =======================
-// CARRUSEL CON ESTILO GRID ORIGINAL (4 productos visibles)
+// CARRUSEL (grid original)
 // =======================
 let currentStartIndex = 0;
 let itemsPorPagina = 4;
@@ -229,16 +241,13 @@ function construirCarruselGrid() {
   productsSection.classList.add("products");
   productsSection.innerHTML = `<h2>Today's items on sale</h2>`;
 
-  // Contenedor del carrusel (para los botones)
   const carouselWrapper = document.createElement("div");
   carouselWrapper.classList.add("carousel-grid-wrapper");
 
-  // Grid donde se mostrarán los productos (usa la clase original)
   const gridContainer = document.createElement("div");
   gridContainer.classList.add("products-grid");
   carouselWrapper.appendChild(gridContainer);
 
-  // Botones de navegación
   const navButtons = document.createElement("div");
   navButtons.classList.add("carousel-nav-buttons");
   const prevBtn = document.createElement("button");
@@ -254,7 +263,6 @@ function construirCarruselGrid() {
   productsSection.appendChild(carouselWrapper);
   body.appendChild(productsSection);
 
-  // Guardar referencias
   window.gridContainer = gridContainer;
   window.prevBtnGrid = prevBtn;
   window.nextBtnGrid = nextBtn;
@@ -323,7 +331,7 @@ function configurarBotonesGrid() {
 }
 
 // =======================
-// EVENTOS Y SIMULACIONES (búsqueda, etc.)
+// EVENTOS Y SIMULACIONES
 // =======================
 function configurarEventos() {
   const searchDiv = document.querySelector(".search-bar");
@@ -391,7 +399,9 @@ function configurarSimulaciones() {
   const cartBtn = document.getElementById("cartBtn");
 
   if (heartBtn) heartBtn.addEventListener("click", () => alert("❤️ Favoritos en desarrollo."));
-  if (userBtn) userBtn.addEventListener("click", () => alert("👤 Perfil en desarrollo."));
+  if (userBtn) userBtn.addEventListener("click", () => {
+    window.location.href = "login.html";
+  });
   if (cartBtn) cartBtn.addEventListener("click", () => alert("🛒 Carrito en desarrollo."));
 
   const viewSalesBtn = document.getElementById("viewSalesBtn");
@@ -414,7 +424,6 @@ function configurarSimulaciones() {
     });
   });
 }
-
 // =======================
 // INICIAR
 // =======================
