@@ -284,7 +284,6 @@ function actualizarCarruselGrid(listaProductos) {
   renderizarGrid();
   configurarBotonesGrid();
 }
-
 function renderizarGrid() {
   const grid = window.gridContainer;
   if (!grid) return;
@@ -304,6 +303,14 @@ function renderizarGrid() {
       <h3>${producto.nombre}</h3>
       <p>${producto.precio}</p>
     `;
+    // Obtener el índice real del producto en el array global 'productos'
+    const index = productos.findIndex(p => p.nombre === producto.nombre);
+    if (index !== -1) {
+      card.setAttribute("data-index", index);
+      card.addEventListener("click", () => {
+        window.location.href = `product.html?id=${index}`;
+      });
+    }
     grid.appendChild(card);
   });
 }
@@ -351,35 +358,50 @@ function configurarEventos() {
   searchContainer.classList.add("search-dropdown");
   searchDiv.appendChild(searchContainer);
 
-  function showSuggestions(text) {
-    searchContainer.innerHTML = "";
-    const panel = document.createElement("div");
-    panel.classList.add("search-panel");
+function showSuggestions(text) {
+  searchContainer.innerHTML = "";
+  const panel = document.createElement("div");
+  panel.classList.add("search-panel");
 
-    const left = document.createElement("div");
-    left.classList.add("search-left");
-    left.innerHTML = `<h4>Most searched</h4><div class="tags">${categorias.map(c => `<span>${c}</span>`).join("")}</div>`;
+  const left = document.createElement("div");
+  left.classList.add("search-left");
+  left.innerHTML = `<h4>Most searched</h4><div class="tags">${categorias.map(c => `<span>${c}</span>`).join("")}</div>`;
 
-    const right = document.createElement("div");
-    right.classList.add("search-right");
-    let resultados = productos;
-    if (text) {
-      resultados = productos.filter(p => p.nombre.toLowerCase().includes(text.toLowerCase()));
-    }
-    right.innerHTML = `
-      <h4>Recommended products</h4>
-      ${resultados.slice(0, 4).map(p => `
-        <div class="search-product">
-          <img src="${p.imagen}">
-          <div><p>${p.nombre}</p><strong>${p.precio}</strong></div>
-        </div>
-      `).join("")}
-    `;
-    panel.appendChild(left);
-    panel.appendChild(right);
-    searchContainer.appendChild(panel);
-    searchContainer.style.display = "block";
+  const right = document.createElement("div");
+  right.classList.add("search-right");
+  let resultados = productos;
+  if (text) {
+    resultados = productos.filter(p => p.nombre.toLowerCase().includes(text.toLowerCase()));
   }
+  // Generamos los productos con un atributo data-nombre
+  right.innerHTML = `
+    <h4>Recommended products</h4>
+    ${resultados.slice(0, 4).map(p => `
+      <div class="search-product" data-nombre="${p.nombre}">
+        <img src="${p.imagen}">
+        <div><p>${p.nombre}</p><strong>${p.precio}</strong></div>
+      </div>
+    `).join("")}
+  `;
+  panel.appendChild(left);
+  panel.appendChild(right);
+  searchContainer.appendChild(panel);
+  searchContainer.style.display = "block";
+
+  // Añadir eventos de clic a cada producto sugerido
+  const searchProducts = searchContainer.querySelectorAll(".search-product");
+  searchProducts.forEach(prodDiv => {
+    const nombre = prodDiv.getAttribute("data-nombre");
+    const productoEncontrado = productos.find(p => p.nombre === nombre);
+    if (productoEncontrado) {
+      const index = productos.findIndex(p => p.nombre === nombre);
+      prodDiv.addEventListener("click", (e) => {
+        e.stopPropagation();
+        window.location.href = `product.html?id=${index}`;
+      });
+    }
+  });
+}
 
   input.addEventListener("focus", () => showSuggestions(input.value));
   input.addEventListener("input", (e) => showSuggestions(e.target.value));
