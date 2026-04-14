@@ -1,51 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
-<link rel="stylesheet" href="styles.css">
-
 
 <head>
+    <meta charset="UTF-8">
     <title>coreSystems | Online Shopping</title>
+    <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="icons/coreSystems-logo-square.png">
 </head>
+
+<body>
 
 <header>
     <div class="header-top">
         <div class="logo-area">
-            <button class="logo"><img src="icons/coreSystems-logo.png" alt="Logo" class="logo"></button>
+            <button class="logo">
+                <img src="icons/coreSystems-logo.png" alt="Logo">
+            </button>
             <h1>coreSystems</h1>
         </div>
 
-        <search class="header-top-search-bar">
+        <div class="header-top-search-bar">
             <input type="text" id="randomText"
-                placeholder="Search for products... Like a gaming laptop or a new phone!">
-            <button type="submit"><img src="icons/search-icon.png"></button>
-        </search>
+                placeholder="Search for products...">
+            <button type="submit">
+                <img src="icons/search-icon.png">
+            </button>
+        </div>
 
         <div class="header-top-icons">
-            <button><a href="https://example.com"><img src="icons/heart-icon.png"></a></button>
-            <button><a href="https://example.com"><img src="icons/user-icon.png"></a></button>
-            <button><a href="https://example.com"><img src="icons/shopping-cart-icon.png"></a></button>
+            <button><img src="icons/heart-icon.png"></button>
+            <button><img src="icons/user-icon.png"></button>
+            <button><img src="icons/shopping-cart-icon.png"></button>
         </div>
     </div>
 
-    <div>
-        <nav class="main-navigation">
-            <button><img src="icons/menu-icon.png"></button>
-            <ul class="nav-list">
-                <li><a href="#">All Categories</a></li>
-                <li><a href="#">Smartphones</a></li>
-                <li><a href="#">Laptops</a></li>
-                <li><a href="#">Tablets</a></li>
-                <li><a href="#">Consoles</a></li>
-                <li><a href="#">Televisions</a></li>
-                <li><a href="#">Smartwatches</a></li>
-                <li class="underline"><a href="#">Trending</a></li>
-                <li class="underline"><a href="#">On Sale</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
-
+    <nav class="main-navigation">
+        <button><img src="icons/menu-icon.png"></button>
+        <ul class="nav-list">
+            <li><a href="#">All Categories</a></li>
+            <li><a href="#">Smartphones</a></li>
+            <li><a href="#">Laptops</a></li>
+            <li><a href="#">Tablets</a></li>
+            <li><a href="#">Consoles</a></li>
+            <li><a href="#">Televisions</a></li>
+            <li><a href="#">Smartwatches</a></li>
+        </ul>
+    </nav>
+  
 <body>
 
     <div class="announcement-bar">
@@ -85,6 +86,67 @@
             </div>
         </div>
     </div>
+    
+    <div class="mega-menu">
+
+        
+        <div class="mega-content" id="smartphones">
+            <div class="column">
+                <h3>Smartphones</h3>
+                <p class="title">Brands</p>
+                <p>iPhone | Samsung | Xiaomi</p>
+            </div>
+        </div>
+
+        
+        <div class="mega-content" id="laptops">
+            <div class="column">
+                <h3>Laptops</h3>
+                <p>Gaming | Business | Creators</p>
+            </div>
+        </div>
+
+        
+        <div class="mega-content" id="tablets">
+            <div class="column">
+                <h3>Tablets</h3>
+                <p class="title">Brands</p>
+                <p>iPad | Samsung | Lenovo</p>
+
+                <p class="title">Use</p>
+                <p>Study | Work | Entertainment</p>
+            </div>
+        </div>
+
+        
+        <div class="mega-content" id="consoles">
+            <div class="column">
+                <h3>Consoles</h3>
+                <p>PlayStation | Xbox | Nintendo</p>
+
+                <p class="title">Accessories</p>
+                <p>Controllers | Headsets</p>
+            </div>
+        </div>
+
+        
+        <div class="mega-content" id="televisions">
+            <div class="column">
+                <h3>Televisions</h3>
+                <p>Smart TV | 4K | OLED</p>
+
+                <p class="title">Sizes</p>
+                <p>32" | 50" | 65" | 75"</p>
+            </div>
+        </div>
+
+        
+        <div class="mega-content" id="smartwatches">
+            <div class="column">
+                <h3>Smartwatches</h3>
+                <p>Apple | Samsung | Xiaomi</p>
+            </div>
+        </div>
 
     <div class="item-carrousel">
         <h2>Trending Products</h2>
@@ -116,7 +178,18 @@
             </div>
         </div>
     </div>
-
 </body>
 
+</header>
+
+
+<div class="announcement-bar">
+    <button><img src="icons/left-arrow.png"></button>
+    <button><img src="icons/right-arrow.png"></button>
+    <a href="#" class="announcement-link"></a>
+</div>
+
+<script src="script.js"></script>
+
+</body>
 </html>

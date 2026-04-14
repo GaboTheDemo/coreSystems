@@ -6,7 +6,7 @@ body {
     justify-content: center;
 }
 
-/* ===== HEADER ===== */
+
 
 .header-top {
     display: flex;
@@ -41,7 +41,7 @@ body {
     cursor: pointer;
 }
 
-/* SEARCH BAR */
+
 
 .header-top-search-bar {
     flex: 0.5;
@@ -58,7 +58,6 @@ body {
     margin-left: 10px;
     border: none;
     outline: none;
-    align-items: center;
     font-size: 15px;
 }
 
@@ -66,7 +65,7 @@ body {
     border: none;
     background-color: #6CEAD2;
     border-radius: 20%;
-    padding: 10px 12px 10px 12px;
+    padding: 10px 12px;
     cursor: pointer;
 }
 
@@ -75,7 +74,7 @@ body {
     height: 20px;
 }
 
-/* RIGHT SIDE ICONS */
+
 
 .header-top-icons {
     display: flex;
@@ -95,7 +94,7 @@ body {
     margin-left: 10px;
 }
 
-/* NAVIGATION */
+
 
 .main-navigation {
     background-color: #4395AD;
@@ -108,7 +107,6 @@ body {
 .nav-list {
     display: flex;
     color: #ffffff;
-    text-decoration: none;
     padding: 8px;
     justify-content: center;
     list-style-type: none;
@@ -136,7 +134,7 @@ body {
     width: 30px;
 }
 
-/* ANNOUNCEMENT BAR */
+
 
 .announcement-bar {
     position: relative;
@@ -146,7 +144,7 @@ body {
     background-image: url('announcement-bar-images/gaming-laptops.png');
     background-size: cover;
     color: #ffffff;
-    padding: 11% 50px 11% 50px;
+    padding: 11% 50px;
     font-size: 30px;
 }
 
@@ -243,4 +241,55 @@ body {
     max-height: 70%;
     object-fit: contain;
     border-radius: 10px;
+}
+
+.mega-menu {
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+}
+
+header {
+    position: relative; 
+}
+
+.mega-content {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #5b2be0, #07173B);
+    padding: 40px;
+    color: white;
+    justify-content: space-around;
+}
+
+
+.mega-content .column {
+    width: 30%;
+}
+
+.mega-content h3 {
+    color: #6CEAD2;
+    border-bottom: 2px solid #6CEAD2;
+    padding-bottom: 5px;
+}
+
+.mega-content p {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.mega-content .title {
+    color: #a78bfa;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+
+.mega-content.active {
+    display: flex;
 }
