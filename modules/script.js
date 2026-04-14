@@ -1,21 +1,4 @@
-// =======================
-// DATA
-// =======================
-
-const textosHero = [
-  "The best tech in one place!",
-  "Find the best gadgets at the best price!",
-  "Upgrade your setup today!",
-];
-
-const categorias = [
-  "Smartphones",
-  "Laptops",
-  "Tablets",
-  "Consoles",
-  "Televisions",
-  "Smartwatches"
-];
+import { textosHero, categorias, productos } from "../data/products.js";
 
 const body = document.body;
 
@@ -45,7 +28,7 @@ search.innerHTML = `
   <button><i data-lucide="search"></i></button>
 `;
 
-// ICONS HEADER
+// ICONS
 const icons = document.createElement("div");
 icons.classList.add("icons");
 
@@ -131,15 +114,8 @@ features.innerHTML = `
 `;
 
 // =======================
-// PRODUCTS (IMÁGENES LOCALES)
+// PRODUCTS
 // =======================
-
-const productos = [
-  ["../product-image/galaxy-s23-ultra.png", "Samsung Galaxy S26 Ultra", "$8.699.900"],
-  ["../product-image/iphone-14-pro-max.png", "Iphone 14 Pro", "$2.799.900"],
-  ["../product-image/macbook-pro-16.png", "Macbook Pro 16\"", "$3.399.600"],
-  ["../product-image/dell-xps-13.png", "Dell XPS 13", "$2.429.849"]
-];
 
 const productsSection = document.createElement("section");
 productsSection.classList.add("products");
@@ -154,9 +130,9 @@ productos.forEach(p => {
   card.classList.add("product-card");
 
   card.innerHTML = `
-    <img src="${p[0]}" alt="${p[1]}">
-    <h3>${p[1]}</h3>
-    <p>${p[2]}</p>
+    <img src="${p.imagen}" alt="${p.nombre}">
+    <h3>${p.nombre}</h3>
+    <p>${p.precio}</p>
   `;
 
   grid.appendChild(card);
@@ -193,7 +169,7 @@ if (input) {
 }
 
 // =======================
-// ACTIVAR ICONOS
+// ICONOS
 // =======================
 
 lucide.createIcons();
