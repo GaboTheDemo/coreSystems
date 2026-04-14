@@ -44,8 +44,9 @@ body {
   display: flex;
   background: white;
   border-radius: 999px;
-  overflow: hidden;
+  overflow: visible; 
   width: 400px;
+  position: relative; 
 }
 
 .search-bar input {
@@ -62,7 +63,142 @@ body {
   cursor: pointer;
 }
 
-/* ICONS HEADER */
+/* =======================
+   SEARCH BAR FIX
+======================= */
+.search-bar {
+  display: flex;
+  background: white;
+  border-radius: 999px;
+  overflow: visible;
+  width: 400px;
+  position: relative;
+}
+
+/* =======================
+   SEARCH DROPDOWN PRO
+======================= */
+.search-dropdown {
+  position: absolute;
+  top: 120%;
+
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 900px;
+  max-width: 90vw;
+
+  background: #0b1b3b;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  display: none;
+  z-index: 999;
+  overflow: hidden;
+  color: white;
+}
+
+/* contenedor interno */
+.search-panel {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+/* =======================
+   LEFT SIDE (TAGS)
+======================= */
+.search-left {
+  width: 40%;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  padding-right: 15px;
+}
+
+.search-left h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tags span {
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tags span:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* =======================
+   RIGHT SIDE (PRODUCTS)
+======================= */
+.search-right {
+  width: 60%;
+}
+
+.search-right h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+/* producto */
+.search-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.search-product:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* imagen */
+.search-product img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  background: white;
+  border-radius: 6px;
+  padding: 3px;
+}
+
+/* texto */
+.search-product p {
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.search-product strong {
+  font-size: 13px;
+  color: #3dd6c6;
+}
+
+/* no results */
+.no-results {
+  text-align: center;
+  padding: 15px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+
+/* =======================
+   ICONS HEADER
+======================= */
 .icons {
   display: flex;
   gap: 15px;
@@ -84,18 +220,22 @@ body {
 .icons svg {
   stroke: white;
 }
+
 /* =======================
    NAVBAR
 ======================= */
 .navbar {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 20px;
   background: #4fa3b1;
-  padding: 10px 40px;
+  padding: 12px 0;
+  position: relative;
 }
 
 .menu-btn {
+  position: absolute;
+  left: 40px;
   background: transparent;
   border: none;
   color: white;
@@ -103,18 +243,39 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 14px;
 }
 
 .navbar ul {
-  display: flex;
+  display: flex; 
   list-style: none;
-  gap: 25px;
+  width: 600px;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.navbar ul.active {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .navbar li {
   color: white;
   font-size: 14px;
   cursor: pointer;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.navbar li:hover {
+  background: rgba(255,255,255,0.1);
 }
 
 /* =======================
@@ -168,10 +329,6 @@ body {
   padding: 40px 20px;
 }
 
-.features h2 {
-  margin-bottom: 30px;
-}
-
 .features-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -185,16 +342,6 @@ body {
   padding: 25px;
   border-radius: 15px;
   box-shadow: 0 8px 15px rgba(0,0,0,0.08);
-  text-align: center;
-}
-
-/* ICONOS FEATURES */
-.feature-icon {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 15px;
-  stroke-width: 1.5;
-  color: #1f2937;
 }
 
 /* =======================
@@ -227,12 +374,10 @@ body {
   transform: translateY(-5px);
 }
 
-/* IMÁGENES */
 .product-card img {
   width: 100%;
   height: 140px;
   object-fit: contain;
-  margin-bottom: 10px;
 }
 
 /* =======================
@@ -246,6 +391,10 @@ body {
 
   .search-bar {
     width: 250px;
+  }
+
+  .navbar ul {
+    width: 90%;
   }
 }
 

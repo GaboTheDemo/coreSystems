@@ -25,8 +25,11 @@ search.classList.add("search-bar");
 
 search.innerHTML = `
   <input type="text" id="searchInput" placeholder="Gaming Laptop">
-  <button><i data-lucide="search"></i></button>
+  <button id="searchBtn"><i data-lucide="search"></i></button>
 `;
+
+// 🔥 IMPORTANTE: definir input DESPUÉS de crearlo
+const input = search.querySelector("#searchInput");
 
 // ICONS
 const icons = document.createElement("div");
@@ -56,7 +59,12 @@ categorias.forEach(cat => {
   ul.appendChild(li);
 });
 
-nav.innerHTML = `<button class="menu-btn"><i data-lucide="menu"></i> All Categories</button>`;
+nav.innerHTML = `
+  <button class="menu-btn">
+    <i data-lucide="menu"></i> All Categories
+  </button>
+`;
+
 nav.appendChild(ul);
 
 // =======================
@@ -85,7 +93,6 @@ features.classList.add("features");
 features.innerHTML = `
   <h2>Check some of these things out!</h2>
   <div class="features-grid">
-
     <div class="card">
       <i data-lucide="box" class="feature-icon"></i>
       <h3>Enter your Location</h3>
@@ -109,7 +116,6 @@ features.innerHTML = `
       <h3>Most Popular</h3>
       <p>See what everyone is buying.</p>
     </div>
-
   </div>
 `;
 
@@ -153,10 +159,93 @@ body.appendChild(features);
 body.appendChild(productsSection);
 
 // =======================
-// RANDOM PLACEHOLDER
+// DROPDOWN CATEGORÍAS
 // =======================
 
-const input = document.getElementById("searchInput");
+const menuBtn = nav.querySelector(".menu-btn");
+const menuList = nav.querySelector("ul");
+
+menuBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  menuList.classList.toggle("active");
+});
+
+document.addEventListener("click", (e) => {
+  if (!nav.contains(e.target)) {
+    menuList.classList.remove("active");
+  }
+});
+
+// =======================
+// SEARCH PANEL PRO
+// =======================
+
+const searchContainer = document.createElement("div");
+searchContainer.classList.add("search-dropdown");
+search.appendChild(searchContainer);
+
+function showSuggestions(text) {
+  searchContainer.innerHTML = "";
+
+  const panel = document.createElement("div");
+  panel.classList.add("search-panel");
+
+  // LEFT
+  const left = document.createElement("div");
+  left.classList.add("search-left");
+
+  left.innerHTML = `
+    <h4>Most searched</h4>
+    <div class="tags">
+      ${categorias.map(c => `<span>${c}</span>`).join("")}
+    </div>
+  `;
+
+  // RIGHT
+  const right = document.createElement("div");
+  right.classList.add("search-right");
+
+  let resultados = productos;
+
+  if (text) {
+    resultados = productos.filter(p =>
+      p.nombre.toLowerCase().includes(text.toLowerCase())
+    );
+  }
+
+  right.innerHTML = `
+    <h4>Recommended products</h4>
+    ${resultados.slice(0, 4).map(p => `
+      <div class="search-product">
+        <img src="${p.imagen}">
+        <div>
+          <p>${p.nombre}</p>
+          <strong>${p.precio}</strong>
+        </div>
+      </div>
+    `).join("")}
+  `;
+
+  panel.appendChild(left);
+  panel.appendChild(right);
+
+  searchContainer.appendChild(panel);
+  searchContainer.style.display = "block";
+}
+
+// EVENTOS 🔥
+input.addEventListener("focus", () => showSuggestions(input.value));
+input.addEventListener("input", (e) => showSuggestions(e.target.value));
+
+document.addEventListener("click", (e) => {
+  if (!search.contains(e.target)) {
+    searchContainer.style.display = "none";
+  }
+});
+
+// =======================
+// PLACEHOLDER RANDOM
+// =======================
 
 const textosInput = [
   "Search for a gaming laptop...",
@@ -164,9 +253,7 @@ const textosInput = [
   "Search for a smart TV...",
 ];
 
-if (input) {
-  input.placeholder = textosInput[Math.floor(Math.random() * textosInput.length)];
-}
+input.placeholder = textosInput[Math.floor(Math.random() * textosInput.length)];
 
 // =======================
 // ICONOS
