@@ -203,7 +203,6 @@ body {
   display: flex;
   align-items: center;
   background: #4fa3b1;
-  padding: 0 0;
   position: relative;
   z-index: 100;
 }
@@ -226,14 +225,12 @@ body {
   background: rgba(0,0,0,0.25);
 }
 
-/* Nav items list */
 .nav-categories {
   display: flex;
   list-style: none;
   flex: 1;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 0;
   padding: 0 10px;
 }
 
@@ -251,7 +248,7 @@ body {
 }
 
 /* =======================
-   MEGA PANEL (por categoría en navbar)
+   MEGA PANEL (por categoría)
 ======================= */
 .mega-panel {
   display: none;
@@ -391,14 +388,12 @@ body {
   stroke: rgba(255,255,255,0.5);
 }
 
-/* Sub-panel al hover de all-cat-item */
 .all-cat-sub {
   display: none;
   position: absolute;
   top: 0;
   left: 100%;
   background: #1a1f4e;
-  border: 1px solid rgba(255,255,255,0.1);
   border-left: 3px solid #3dd6c6;
   padding: 20px;
   min-width: 600px;
@@ -516,10 +511,10 @@ body {
 }
 
 /* =======================
-   PRODUCTS
+   PRODUCTOS (GRID ORIGINAL - ESTILO NORMAL)
 ======================= */
 .products {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 40px auto;
   background: #e5e7eb;
   padding: 25px;
@@ -552,76 +547,19 @@ body {
 }
 
 /* =======================
-   RESPONSIVE
+   CARRUSEL (BOTONES)
 ======================= */
-@media (max-width: 900px) {
-  .features-grid,
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .search-bar {
-    width: 250px;
-  }
-
-  .nav-categories {
-    display: none;
-  }
-
-  .mega-left {
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 600px) {
-  .features-grid,
-  .products-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero h2 {
-    font-size: 32px;
-  }
-
-  .all-cat-sub {
-    left: 0;
-    top: 100%;
-    min-width: 90vw;
-  }
-}
-/* Grid de productos (4 columnas) */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-/* En móviles, ajustar */
-@media (max-width: 768px) {
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 480px) {
-  .products-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Contenedor del carrusel */
 .carousel-grid-wrapper {
   position: relative;
   width: 100%;
   margin: 0 auto;
 }
 
-/* Botones de navegación */
 .carousel-nav-buttons {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin: 1rem 0;
+  margin-top: 1.5rem;
 }
 
 .carousel-btn-grid {
@@ -639,23 +577,36 @@ body {
   background: #555;
 }
 
-/* Puntos indicadores */
-.carousel-dots {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
+/* =======================
+   RESPONSIVE
+======================= */
+@media (max-width: 900px) {
+  .features-grid,
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .search-bar {
+    width: 250px;
+  }
+  .nav-categories {
+    display: none;
+  }
+  .mega-left {
+    flex-direction: column;
+  }
 }
 
-.dot {
-  width: 12px;
-  height: 12px;
-  background-color: #bbb;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.dot.active {
-  background-color: #333;
+@media (max-width: 600px) {
+  .features-grid,
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero h2 {
+    font-size: 32px;
+  }
+  .all-cat-sub {
+    left: 0;
+    top: 100%;
+    min-width: 90vw;
+  }
 }

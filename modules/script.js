@@ -4,29 +4,19 @@
 
 const body = document.body;
 
-// Variables globales que se llenarán con fetch
 let textosHero = [];
 let categorias = [];
 let productos = [];
 let megaMenuData = {};
 
-// Variables para el carrusel de grid
-let productosActuales = [];      // Lista de productos a mostrar (pueden ser filtrados)
-let paginaActual = 0;
-let productosPorPagina = 4;
-let totalPaginas = 0;
-
-// Referencias a elementos del carrusel
-let productsGrid;                // grid contenedor
-let productsSection;             // sección de productos
-let prevBtn, nextBtn, dotsContainer;
-
 // =======================
-// FUNCIÓN PRINCIPAL: OBTENER DATOS Y CONSTRUIR PÁGINA
+// FUNCIÓN PRINCIPAL
 // =======================
 async function iniciarPagina() {
   try {
-    // Ajusta la ruta según tu estructura
+    // Ajusta la ruta según tu estructura:
+    // Si script.js está en la raíz, usa 'data/data.json'
+    // Si está dentro de una carpeta 'js', usa '../data/data.json'
     const respuesta = await fetch('../data/data.json');
     if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
     const datos = await respuesta.json();
@@ -39,9 +29,10 @@ async function iniciarPagina() {
     construirHeader();
     construirHero();
     construirFeatures();
-    construirProductos();   // esto construye el grid carrusel
+    construirCarruselGrid();  // Nuevo: carrusel con el estilo grid original
 
     configurarEventos();
+    configurarSimulaciones();
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
   } catch (error) {
@@ -51,7 +42,7 @@ async function iniciarPagina() {
 }
 
 // =======================
-// CONSTRUIR HEADER (igual que antes)
+// HEADER (igual que antes)
 // =======================
 function construirHeader() {
   const header = document.createElement("header");
@@ -78,9 +69,9 @@ function construirHeader() {
   const icons = document.createElement("div");
   icons.classList.add("icons");
   icons.innerHTML = `
-    <button><i data-lucide="heart"></i></button>
-    <button><i data-lucide="user"></i></button>
-    <button><i data-lucide="shopping-cart"></i></button>
+    <button id="heartBtn"><i data-lucide="heart"></i></button>
+    <button id="userBtn"><i data-lucide="user"></i></button>
+    <button id="cartBtn"><i data-lucide="shopping-cart"></i></button>
   `;
   topBar.appendChild(search);
   topBar.appendChild(icons);
@@ -118,7 +109,7 @@ function construirHeader() {
       mid.innerHTML = `
         <h4><span class="mega-icon">&#9633;</span> Accessories</h4>
         <p class="mega-subtitle">${data.accessories.title}</p>
-        ${data.accessories.items.map(i => `<a href="#">${i}</a>`).join("")}
+        ${data.accessories.items.map(i => `<a href="#" class="simulate-link">${i}</a>`).join("")}
       `;
 
       const right = document.createElement("div");
@@ -126,7 +117,7 @@ function construirHeader() {
       right.innerHTML = `
         <h4><span class="mega-icon">&#9675;</span> More</h4>
         <p class="mega-subtitle">${data.more.title}</p>
-        ${data.more.items.map(i => `<a href="#">${i}</a>`).join("")}
+        ${data.more.items.map(i => `<a href="#" class="simulate-link">${i}</a>`).join("")}
       `;
 
       panel.appendChild(left);
@@ -162,11 +153,11 @@ function construirHeader() {
     });
     const accDiv = document.createElement("div");
     accDiv.classList.add("all-cat-sub-col");
-    accDiv.innerHTML = `<h4>${data.accessories.title}</h4>${data.accessories.items.map(i => `<a href="#">${i}</a>`).join("<br>")}`;
+    accDiv.innerHTML = `<h4>${data.accessories.title}</h4>${data.accessories.items.map(i => `<a href="#" class="simulate-link">${i}</a>`).join("<br>")}`;
     subPanel.appendChild(accDiv);
     const moreDiv = document.createElement("div");
     moreDiv.classList.add("all-cat-sub-col");
-    moreDiv.innerHTML = `<h4>${data.more.title}</h4>${data.more.items.map(i => `<a href="#">${i}</a>`).join("<br>")}`;
+    moreDiv.innerHTML = `<h4>${data.more.title}</h4>${data.more.items.map(i => `<a href="#" class="simulate-link">${i}</a>`).join("<br>")}`;
     subPanel.appendChild(moreDiv);
 
     catItem.appendChild(subPanel);
@@ -201,8 +192,8 @@ function construirHero() {
     <h2>${textoAleatorio}</h2>
     <p>For the best price too!</p>
     <div class="hero-buttons">
-      <button class="primary">View Sales</button>
-      <button class="secondary">Explore Categories</button>
+      <button class="primary" id="viewSalesBtn">View Sales</button>
+      <button class="secondary" id="exploreCategoriesBtn">Explore Categories</button>
     </div>
   `;
   body.appendChild(hero);
@@ -227,115 +218,112 @@ function construirFeatures() {
 }
 
 // =======================
-// CONSTRUIR CARRUSEL DE GRID (4 productos por página)
+// CARRUSEL CON ESTILO GRID ORIGINAL (4 productos visibles)
 // =======================
-function construirProductos() {
-  productsSection = document.createElement("section");
+let currentStartIndex = 0;
+let itemsPorPagina = 4;
+let todosLosProductos = [];
+
+function construirCarruselGrid() {
+  const productsSection = document.createElement("section");
   productsSection.classList.add("products");
   productsSection.innerHTML = `<h2>Today's items on sale</h2>`;
 
-  // Contenedor del carrusel (envoltura)
+  // Contenedor del carrusel (para los botones)
   const carouselWrapper = document.createElement("div");
   carouselWrapper.classList.add("carousel-grid-wrapper");
 
-  // Grid de productos (se muestra con CSS Grid, 4 columnas)
-  productsGrid = document.createElement("div");
-  productsGrid.classList.add("products-grid");
-  carouselWrapper.appendChild(productsGrid);
+  // Grid donde se mostrarán los productos (usa la clase original)
+  const gridContainer = document.createElement("div");
+  gridContainer.classList.add("products-grid");
+  carouselWrapper.appendChild(gridContainer);
 
   // Botones de navegación
   const navButtons = document.createElement("div");
   navButtons.classList.add("carousel-nav-buttons");
-  prevBtn = document.createElement("button");
+  const prevBtn = document.createElement("button");
   prevBtn.classList.add("carousel-btn-grid", "prev");
   prevBtn.innerHTML = "❮";
-  nextBtn = document.createElement("button");
+  const nextBtn = document.createElement("button");
   nextBtn.classList.add("carousel-btn-grid", "next");
   nextBtn.innerHTML = "❯";
   navButtons.appendChild(prevBtn);
   navButtons.appendChild(nextBtn);
   carouselWrapper.appendChild(navButtons);
 
-  // Contenedor de puntos (indicadores de página)
-  dotsContainer = document.createElement("div");
-  dotsContainer.classList.add("carousel-dots");
-  carouselWrapper.appendChild(dotsContainer);
-
   productsSection.appendChild(carouselWrapper);
   body.appendChild(productsSection);
 
-  // Establecer los productos actuales (todos al inicio)
-  productosActuales = [...productos];
-  totalPaginas = Math.ceil(productosActuales.length / productosPorPagina);
-  paginaActual = 0;
-  actualizarGrid();
+  // Guardar referencias
+  window.gridContainer = gridContainer;
+  window.prevBtnGrid = prevBtn;
+  window.nextBtnGrid = nextBtn;
 
-  // Eventos de los botones
-  prevBtn.addEventListener("click", () => {
-    if (totalPaginas === 0) return;
-    paginaActual = (paginaActual - 1 + totalPaginas) % totalPaginas;
-    actualizarGrid();
-  });
-  nextBtn.addEventListener("click", () => {
-    if (totalPaginas === 0) return;
-    paginaActual = (paginaActual + 1) % totalPaginas;
-    actualizarGrid();
-  });
+  actualizarCarruselGrid(productos);
 }
 
-function actualizarGrid() {
-  if (!productsGrid) return;
-
-  // Calcular índices de inicio y fin
-  const start = paginaActual * productosPorPagina;
-  const end = start + productosPorPagina;
-  const productosPagina = productosActuales.slice(start, end);
-
-  // Limpiar grid
-  productsGrid.innerHTML = "";
-
-  // Si no hay productos, mostrar mensaje
-  if (productosPagina.length === 0) {
-    productsGrid.innerHTML = "<p>No hay productos disponibles</p>";
-  } else {
-    productosPagina.forEach(p => {
-      const card = document.createElement("div");
-      card.classList.add("product-card");
-      card.innerHTML = `
-        <img src="${p.imagen}" alt="${p.nombre}">
-        <h3>${p.nombre}</h3>
-        <p>${p.precio}</p>
-      `;
-      productsGrid.appendChild(card);
-    });
-  }
-
-  // Actualizar puntos indicadores
-  actualizarPuntos();
+function actualizarCarruselGrid(listaProductos) {
+  todosLosProductos = listaProductos;
+  currentStartIndex = 0;
+  renderizarGrid();
+  configurarBotonesGrid();
 }
 
-function actualizarPuntos() {
-  if (!dotsContainer) return;
-  dotsContainer.innerHTML = "";
-  if (totalPaginas <= 1) {
-    dotsContainer.style.display = "none";
+function renderizarGrid() {
+  const grid = window.gridContainer;
+  if (!grid) return;
+  grid.innerHTML = "";
+
+  if (todosLosProductos.length === 0) {
+    grid.innerHTML = "<p>No hay productos disponibles</p>";
     return;
   }
-  dotsContainer.style.display = "flex";
-  for (let i = 0; i < totalPaginas; i++) {
-    const dot = document.createElement("span");
-    dot.classList.add("dot");
-    if (i === paginaActual) dot.classList.add("active");
-    dot.addEventListener("click", () => {
-      paginaActual = i;
-      actualizarGrid();
-    });
-    dotsContainer.appendChild(dot);
+
+  const productosMostrar = todosLosProductos.slice(currentStartIndex, currentStartIndex + itemsPorPagina);
+  productosMostrar.forEach(producto => {
+    const card = document.createElement("div");
+    card.classList.add("product-card");
+    card.innerHTML = `
+      <img src="${producto.imagen}" alt="${producto.nombre}">
+      <h3>${producto.nombre}</h3>
+      <p>${producto.precio}</p>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function configurarBotonesGrid() {
+  const total = todosLosProductos.length;
+  if (total <= itemsPorPagina) {
+    if (window.prevBtnGrid) window.prevBtnGrid.style.display = "none";
+    if (window.nextBtnGrid) window.nextBtnGrid.style.display = "none";
+    return;
+  } else {
+    if (window.prevBtnGrid) window.prevBtnGrid.style.display = "inline-block";
+    if (window.nextBtnGrid) window.nextBtnGrid.style.display = "inline-block";
   }
+
+  window.prevBtnGrid.onclick = () => {
+    let newIndex = currentStartIndex - itemsPorPagina;
+    if (newIndex < 0) {
+      newIndex = Math.max(0, total - itemsPorPagina);
+    }
+    currentStartIndex = newIndex;
+    renderizarGrid();
+  };
+
+  window.nextBtnGrid.onclick = () => {
+    let newIndex = currentStartIndex + itemsPorPagina;
+    if (newIndex >= total) {
+      newIndex = 0;
+    }
+    currentStartIndex = newIndex;
+    renderizarGrid();
+  };
 }
 
 // =======================
-// CONFIGURAR EVENTOS (búsqueda y panel de sugerencias)
+// EVENTOS Y SIMULACIONES (búsqueda, etc.)
 // =======================
 function configurarEventos() {
   const searchDiv = document.querySelector(".search-bar");
@@ -383,27 +371,47 @@ function configurarEventos() {
     if (!searchDiv.contains(e.target)) searchContainer.style.display = "none";
   });
 
-  // Búsqueda: filtrar productos y reiniciar carrusel
   searchBtn.addEventListener("click", () => {
     const query = input.value.trim();
     if (query === "") {
-      productosActuales = [...productos];
+      actualizarCarruselGrid(productos);
     } else {
-      productosActuales = productos.filter(p =>
+      const filtrados = productos.filter(p =>
         p.nombre.toLowerCase().includes(query.toLowerCase())
       );
-    }
-    totalPaginas = Math.ceil(productosActuales.length / productosPorPagina);
-    paginaActual = 0;
-    if (totalPaginas === 0) {
-      // No hay resultados, mostrar grid vacío
-      productsGrid.innerHTML = "<p>No se encontraron productos</p>";
-      dotsContainer.innerHTML = "";
-      dotsContainer.style.display = "none";
-    } else {
-      actualizarGrid();
+      actualizarCarruselGrid(filtrados);
     }
     searchContainer.style.display = "none";
+  });
+}
+
+function configurarSimulaciones() {
+  const heartBtn = document.getElementById("heartBtn");
+  const userBtn = document.getElementById("userBtn");
+  const cartBtn = document.getElementById("cartBtn");
+
+  if (heartBtn) heartBtn.addEventListener("click", () => alert("❤️ Favoritos en desarrollo."));
+  if (userBtn) userBtn.addEventListener("click", () => alert("👤 Perfil en desarrollo."));
+  if (cartBtn) cartBtn.addEventListener("click", () => alert("🛒 Carrito en desarrollo."));
+
+  const viewSalesBtn = document.getElementById("viewSalesBtn");
+  const exploreCategoriesBtn = document.getElementById("exploreCategoriesBtn");
+  if (viewSalesBtn) viewSalesBtn.addEventListener("click", () => alert("📢 Ver Ofertas en desarrollo."));
+  if (exploreCategoriesBtn) exploreCategoriesBtn.addEventListener("click", () => alert("🔍 Explorar Categorías en desarrollo."));
+
+  document.querySelectorAll(".simulate-link").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert(`🔗 Funcionalidad en desarrollo: ${link.textContent}`);
+    });
+  });
+
+  document.querySelectorAll(".all-cat-item .all-cat-name").forEach(catName => {
+    catName.style.cursor = "pointer";
+    catName.addEventListener("click", (e) => {
+      e.stopPropagation();
+      alert(`📂 Categoría "${catName.textContent}" - Próximamente.`);
+    });
   });
 }
 
