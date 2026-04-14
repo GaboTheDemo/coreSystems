@@ -46,3 +46,52 @@ document.addEventListener("mousemove", (e) => {
     menus.forEach(menu => menu.classList.remove("active"));
   }
 });
+
+const thumbs = document.querySelectorAll(".thumb");
+const mainImage = document.getElementById("mainProductImage");
+
+thumbs.forEach(thumb => {
+  thumb.addEventListener("click", () => {
+
+    thumbs.forEach(t => t.classList.remove("active"));
+    thumb.classList.add("active");
+
+    mainImage.src = thumb.src;
+  });
+});
+
+let quantity = 1;
+const quantityText = document.getElementById("quantity");
+
+document.getElementById("plus").addEventListener("click", () => {
+  quantity++;
+  quantityText.textContent = quantity;
+});
+
+document.getElementById("minus").addEventListener("click", () => {
+  if (quantity > 1) {
+    quantity--;
+    quantityText.textContent = quantity;
+  }
+});
+
+document.querySelector(".add-cart").addEventListener("click", () => {
+  alert("Producto agregado al carrito 🛒");
+});
+
+document.querySelector(".buy-now").addEventListener("click", () => {
+  alert("Redirigiendo a compra ⚡");
+});
+
+const toggleBtn = document.getElementById("toggleDescription");
+const extraDesc = document.getElementById("extraDescription");
+
+toggleBtn.addEventListener("click", () => {
+  extraDesc.classList.toggle("hidden");
+
+  if (extraDesc.classList.contains("hidden")) {
+    toggleBtn.textContent = "Ver más";
+  } else {
+    toggleBtn.textContent = "Ver menos";
+  }
+});
