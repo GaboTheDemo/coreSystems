@@ -32,6 +32,26 @@
       "imagen": "../product-image/dell-xps-13.png",
       "nombre": "Dell XPS 13",
       "precio": "$2.429.849"
+    },
+    {
+      "imagen": "../product-image/reloj.png",
+      "nombre": "Apple Watch 11",
+      "precio": "$3.900.000"
+    },
+    {
+      "imagen": "../product-image/tablet.png",
+      "nombre": "Tablet Android 10\"",
+      "precio": "$800.000"
+    },
+    {
+      "imagen": "../product-image/Televisor.png",
+      "nombre": "Smart TV 55\" 4K",
+      "precio": "$1.299.900"
+    },
+    {
+      "imagen": "../product-image/control.png",
+      "nombre": "Control Xbox rojo",
+      "precio": "$600.900"
     }
   ],
   "megaMenuData": {

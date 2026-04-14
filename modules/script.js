@@ -10,38 +10,39 @@ let categorias = [];
 let productos = [];
 let megaMenuData = {};
 
-// Referencias a elementos dinámicos
-let productsGrid;      // div con clase "products-grid"
-let productsSection;   // sección de productos
+// Variables para el carrusel de grid
+let productosActuales = [];      // Lista de productos a mostrar (pueden ser filtrados)
+let paginaActual = 0;
+let productosPorPagina = 4;
+let totalPaginas = 0;
+
+// Referencias a elementos del carrusel
+let productsGrid;                // grid contenedor
+let productsSection;             // sección de productos
+let prevBtn, nextBtn, dotsContainer;
 
 // =======================
 // FUNCIÓN PRINCIPAL: OBTENER DATOS Y CONSTRUIR PÁGINA
 // =======================
 async function iniciarPagina() {
   try {
-    // --- Ajusta esta ruta según la ubicación real de tu data.json ---
-    // Si tu script está en la raíz, usa "data/data.json"
-    // Si está dentro de una carpeta "js", usa "../data/data.json"
-    const respuesta = await fetch('../data/data.json');  // <--- CAMBIA SI ES NECESARIO
+    // Ajusta la ruta según tu estructura
+    const respuesta = await fetch('../data/data.json');
     if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
     const datos = await respuesta.json();
 
-    // Asignar a las variables globales
     textosHero = datos.textosHero;
     categorias = datos.categorias;
     productos = datos.productos;
     megaMenuData = datos.megaMenuData;
 
-    // Construir toda la interfaz
     construirHeader();
     construirHero();
     construirFeatures();
-    construirProductos();
+    construirProductos();   // esto construye el grid carrusel
 
-    // Configurar eventos (búsqueda, etc.)
     configurarEventos();
 
-    // Inicializar iconos de Lucide (si está disponible)
     if (typeof lucide !== 'undefined') lucide.createIcons();
   } catch (error) {
     console.error('Error al cargar data.json:', error);
@@ -50,12 +51,11 @@ async function iniciarPagina() {
 }
 
 // =======================
-// CONSTRUIR HEADER (top bar + navbar + megamenús)
+// CONSTRUIR HEADER (igual que antes)
 // =======================
 function construirHeader() {
   const header = document.createElement("header");
 
-  // TOP BAR
   const topBar = document.createElement("div");
   topBar.classList.add("header-top");
   topBar.innerHTML = `
@@ -65,7 +65,6 @@ function construirHeader() {
     </div>
   `;
 
-  // SEARCH (input + botón)
   const search = document.createElement("div");
   search.classList.add("search-bar");
   search.innerHTML = `
@@ -76,7 +75,6 @@ function construirHeader() {
   const textosInput = ["Search for a gaming laptop...", "Search for a new phone...", "Search for a smart TV..."];
   input.placeholder = textosInput[Math.floor(Math.random() * textosInput.length)];
 
-  // Iconos
   const icons = document.createElement("div");
   icons.classList.add("icons");
   icons.innerHTML = `
@@ -87,14 +85,12 @@ function construirHeader() {
   topBar.appendChild(search);
   topBar.appendChild(icons);
 
-  // NAVBAR
   const nav = document.createElement("nav");
   nav.classList.add("navbar");
 
   const ul = document.createElement("ul");
   ul.classList.add("nav-categories");
 
-  // Crear items de categoría con megamenú
   categorias.forEach(cat => {
     const li = document.createElement("li");
     li.classList.add("nav-item");
@@ -105,7 +101,6 @@ function construirHeader() {
       const panel = document.createElement("div");
       panel.classList.add("mega-panel");
 
-      // Columnas izquierdas
       const left = document.createElement("div");
       left.classList.add("mega-left");
       data.columns.forEach(col => {
@@ -118,7 +113,6 @@ function construirHeader() {
         left.appendChild(colDiv);
       });
 
-      // Accesorios
       const mid = document.createElement("div");
       mid.classList.add("mega-mid");
       mid.innerHTML = `
@@ -127,7 +121,6 @@ function construirHeader() {
         ${data.accessories.items.map(i => `<a href="#">${i}</a>`).join("")}
       `;
 
-      // Más
       const right = document.createElement("div");
       right.classList.add("mega-right");
       right.innerHTML = `
@@ -144,7 +137,6 @@ function construirHeader() {
     ul.appendChild(li);
   });
 
-  // Botón "All Categories"
   nav.innerHTML = `<button class="menu-btn"><i data-lucide="menu"></i> All Categories</button>`;
   const allCatPanel = document.createElement("div");
   allCatPanel.classList.add("all-cat-panel");
@@ -184,7 +176,6 @@ function construirHeader() {
   nav.appendChild(ul);
   nav.appendChild(allCatPanel);
 
-  // Evento para mostrar/ocultar "All Categories"
   const menuBtn = nav.querySelector(".menu-btn");
   menuBtn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -236,34 +227,111 @@ function construirFeatures() {
 }
 
 // =======================
-// PRODUCTOS (grid)
+// CONSTRUIR CARRUSEL DE GRID (4 productos por página)
 // =======================
 function construirProductos() {
   productsSection = document.createElement("section");
   productsSection.classList.add("products");
   productsSection.innerHTML = `<h2>Today's items on sale</h2>`;
+
+  // Contenedor del carrusel (envoltura)
+  const carouselWrapper = document.createElement("div");
+  carouselWrapper.classList.add("carousel-grid-wrapper");
+
+  // Grid de productos (se muestra con CSS Grid, 4 columnas)
   productsGrid = document.createElement("div");
   productsGrid.classList.add("products-grid");
-  productsSection.appendChild(productsGrid);
+  carouselWrapper.appendChild(productsGrid);
+
+  // Botones de navegación
+  const navButtons = document.createElement("div");
+  navButtons.classList.add("carousel-nav-buttons");
+  prevBtn = document.createElement("button");
+  prevBtn.classList.add("carousel-btn-grid", "prev");
+  prevBtn.innerHTML = "❮";
+  nextBtn = document.createElement("button");
+  nextBtn.classList.add("carousel-btn-grid", "next");
+  nextBtn.innerHTML = "❯";
+  navButtons.appendChild(prevBtn);
+  navButtons.appendChild(nextBtn);
+  carouselWrapper.appendChild(navButtons);
+
+  // Contenedor de puntos (indicadores de página)
+  dotsContainer = document.createElement("div");
+  dotsContainer.classList.add("carousel-dots");
+  carouselWrapper.appendChild(dotsContainer);
+
+  productsSection.appendChild(carouselWrapper);
   body.appendChild(productsSection);
 
-  // Mostrar todos los productos
-  actualizarGridProductos(productos);
+  // Establecer los productos actuales (todos al inicio)
+  productosActuales = [...productos];
+  totalPaginas = Math.ceil(productosActuales.length / productosPorPagina);
+  paginaActual = 0;
+  actualizarGrid();
+
+  // Eventos de los botones
+  prevBtn.addEventListener("click", () => {
+    if (totalPaginas === 0) return;
+    paginaActual = (paginaActual - 1 + totalPaginas) % totalPaginas;
+    actualizarGrid();
+  });
+  nextBtn.addEventListener("click", () => {
+    if (totalPaginas === 0) return;
+    paginaActual = (paginaActual + 1) % totalPaginas;
+    actualizarGrid();
+  });
 }
 
-function actualizarGridProductos(listaProductos) {
+function actualizarGrid() {
   if (!productsGrid) return;
+
+  // Calcular índices de inicio y fin
+  const start = paginaActual * productosPorPagina;
+  const end = start + productosPorPagina;
+  const productosPagina = productosActuales.slice(start, end);
+
+  // Limpiar grid
   productsGrid.innerHTML = "";
-  listaProductos.forEach(p => {
-    const card = document.createElement("div");
-    card.classList.add("product-card");
-    card.innerHTML = `
-      <img src="${p.imagen}" alt="${p.nombre}">
-      <h3>${p.nombre}</h3>
-      <p>${p.precio}</p>
-    `;
-    productsGrid.appendChild(card);
-  });
+
+  // Si no hay productos, mostrar mensaje
+  if (productosPagina.length === 0) {
+    productsGrid.innerHTML = "<p>No hay productos disponibles</p>";
+  } else {
+    productosPagina.forEach(p => {
+      const card = document.createElement("div");
+      card.classList.add("product-card");
+      card.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}">
+        <h3>${p.nombre}</h3>
+        <p>${p.precio}</p>
+      `;
+      productsGrid.appendChild(card);
+    });
+  }
+
+  // Actualizar puntos indicadores
+  actualizarPuntos();
+}
+
+function actualizarPuntos() {
+  if (!dotsContainer) return;
+  dotsContainer.innerHTML = "";
+  if (totalPaginas <= 1) {
+    dotsContainer.style.display = "none";
+    return;
+  }
+  dotsContainer.style.display = "flex";
+  for (let i = 0; i < totalPaginas; i++) {
+    const dot = document.createElement("span");
+    dot.classList.add("dot");
+    if (i === paginaActual) dot.classList.add("active");
+    dot.addEventListener("click", () => {
+      paginaActual = i;
+      actualizarGrid();
+    });
+    dotsContainer.appendChild(dot);
+  }
 }
 
 // =======================
@@ -275,7 +343,6 @@ function configurarEventos() {
   const input = searchDiv.querySelector("#searchInput");
   const searchBtn = searchDiv.querySelector("#searchBtn");
 
-  // Panel de sugerencias
   const searchContainer = document.createElement("div");
   searchContainer.classList.add("search-dropdown");
   searchDiv.appendChild(searchContainer);
@@ -316,24 +383,31 @@ function configurarEventos() {
     if (!searchDiv.contains(e.target)) searchContainer.style.display = "none";
   });
 
-  // =======================
-  // BOTÓN DE BÚSQUEDA: FILTRA EL GRID PRINCIPAL
-  // =======================
+  // Búsqueda: filtrar productos y reiniciar carrusel
   searchBtn.addEventListener("click", () => {
     const query = input.value.trim();
     if (query === "") {
-      actualizarGridProductos(productos);      // Mostrar todos
+      productosActuales = [...productos];
     } else {
-      const filtrados = productos.filter(p =>
+      productosActuales = productos.filter(p =>
         p.nombre.toLowerCase().includes(query.toLowerCase())
       );
-      actualizarGridProductos(filtrados);
+    }
+    totalPaginas = Math.ceil(productosActuales.length / productosPorPagina);
+    paginaActual = 0;
+    if (totalPaginas === 0) {
+      // No hay resultados, mostrar grid vacío
+      productsGrid.innerHTML = "<p>No se encontraron productos</p>";
+      dotsContainer.innerHTML = "";
+      dotsContainer.style.display = "none";
+    } else {
+      actualizarGrid();
     }
     searchContainer.style.display = "none";
   });
 }
 
 // =======================
-// INICIAR CUANDO EL DOM ESTÉ LISTO
+// INICIAR
 // =======================
 document.addEventListener("DOMContentLoaded", iniciarPagina);
