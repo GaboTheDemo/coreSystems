@@ -1,0 +1,195 @@
+{
+  "textosHero": [
+    "The best tech in one place!",
+    "Find the best gadgets at the best price!",
+    "Upgrade your setup today!"
+  ],
+  "categorias": [
+    "Smartphones",
+    "Laptops",
+    "Tablets",
+    "Consoles",
+    "Televisions",
+    "Smartwatches"
+  ],
+  "productos": [
+    {
+      "imagen": "../product-image/galaxy-s23-ultra.png",
+      "nombre": "Samsung Galaxy S26 Ultra",
+      "precio": "$8.699.900"
+    },
+    {
+      "imagen": "../product-image/iphone-14-pro-max.png",
+      "nombre": "Iphone 14 Pro Max",
+      "precio": "$2.799.900"
+    },
+    {
+      "imagen": "../product-image/macbook-pro-16.png",
+      "nombre": "Macbook Pro 16\"",
+      "precio": "$3.399.600"
+    },
+    {
+      "imagen": "../product-image/dell-xps-13.png",
+      "nombre": "Dell XPS 13",
+      "precio": "$2.429.849"
+    },
+    {
+      "imagen": "../product-image/reloj.png",
+      "nombre": "Apple Watch 11",
+      "precio": "$3.900.000"
+    },
+    {
+      "imagen": "../product-image/tablet.png",
+      "nombre": "Tablet Android 10\"",
+      "precio": "$800.000"
+    },
+    {
+      "imagen": "../product-image/Televisor.png",
+      "nombre": "Smart TV 55\" 4K",
+      "precio": "$1.299.900"
+    },
+    {
+      "imagen": "../product-image/control.png",
+      "nombre": "Control Xbox rojo",
+      "precio": "$600.900"
+    }
+  ],
+  "megaMenuData": {
+    "Smartphones": {
+      "columns": [
+        {
+          "title": "Brands",
+          "items": ["iPhone", "Samsung", "Xiaomi", "Motorola", "vivo", "Oppo", "Realme", "ZTE", "TCL", "Kalley", "Huawei", "Honor", "Tecno", "Infinix", "Poco"]
+        },
+        {
+          "title": "Storage capacity",
+          "items": ["64 GB", "128 GB", "256 GB", "512 GB", "1T", "2T"]
+        },
+        {
+          "title": "RAM memory",
+          "items": ["2 GB", "3 GB", "4 GB", "6 GB", "8 GB", "12 GB"]
+        }
+      ],
+      "accessories": {
+        "title": "Mobile & Tablet Accessories",
+        "items": ["Cases and Covers", "Headphones and Hands-Free", "Micro SD Memory Cards", "External Power Bank Batteries", "Cables, Chargers, Adapters", "Bases and Stands"]
+      },
+      "more": {
+        "title": "Discover More",
+        "items": ["Free Insurance", "Trade-In Plan", "Cheap Phones", "Mobile Phone Launches", "SIM Cards"]
+      }
+    },
+    "Laptops": {
+      "columns": [
+        {
+          "title": "Brands",
+          "items": ["Apple", "Dell", "HP", "Lenovo", "Asus", "Acer", "MSI", "Razer", "Samsung", "LG"]
+        },
+        {
+          "title": "RAM",
+          "items": ["8 GB", "16 GB", "32 GB", "64 GB"]
+        },
+        {
+          "title": "Storage",
+          "items": ["256 GB SSD", "512 GB SSD", "1 TB SSD", "2 TB SSD", "1 TB HDD"]
+        }
+      ],
+      "accessories": {
+        "title": "Laptop Accessories",
+        "items": ["Laptop Bags", "Cooling Pads", "External Monitors", "USB Hubs", "Keyboards & Mice", "Docking Stations"]
+      },
+      "more": {
+        "title": "Discover More",
+        "items": ["Gaming Laptops", "Business Laptops", "Ultrabooks", "Budget Picks", "Student Deals"]
+      }
+    },
+    "Tablets": {
+      "columns": [
+        {
+          "title": "Brands",
+          "items": ["Apple iPad", "Samsung", "Lenovo", "Huawei", "Amazon Fire", "Microsoft Surface"]
+        },
+        {
+          "title": "Screen Size",
+          "items": ["7\"", "8\"", "10\"", "11\"", "12.9\"", "13\""]
+        },
+        {
+          "title": "Storage",
+          "items": ["32 GB", "64 GB", "128 GB", "256 GB", "512 GB"]
+        }
+      ],
+      "accessories": {
+        "title": "Tablet Accessories",
+        "items": ["Tablet Cases", "Stylus Pens", "Keyboard Covers", "Screen Protectors", "Tablet Stands", "Chargers"]
+      },
+      "more": {
+        "title": "Discover More",
+        "items": ["Kids Tablets", "Drawing Tablets", "E-Readers", "Budget Tablets", "Pro Models"]
+      }
+    },
+    "Consoles": {
+      "columns": [
+        {
+          "title": "Brands",
+          "items": ["PlayStation 5", "Xbox Series X", "Nintendo Switch", "PlayStation 4", "Xbox One", "Retro Consoles"]
+        },
+        {
+          "title": "Type",
+          "items": ["Home Consoles", "Portable Consoles", "Handheld", "Retro/Classic", "PC Gaming"]
+        }
+      ],
+      "accessories": {
+        "title": "Console Accessories",
+        "items": ["Controllers", "Headsets", "Charging Docks", "Memory Cards", "Gaming Chairs", "Capture Cards"]
+      },
+      "more": {
+        "title": "Discover More",
+        "items": ["New Releases", "Pre-Orders", "Bundle Deals", "Gaming Subscriptions", "Game Gift Cards"]
+      }
+    },
+    "Televisions": {
+      "columns": [
+        {
+          "title": "Brands",
+          "items": ["Samsung", "LG", "Sony", "TCL", "Hisense", "Philips", "Panasonic", "Sharp"]
+        },
+        {
+          "title": "Screen Size",
+          "items": ["32\"", "43\"", "50\"", "55\"", "65\"", "75\"", "85\""]
+        },
+        {
+          "title": "Technology",
+          "items": ["OLED", "QLED", "LED", "4K UHD", "8K", "Smart TV", "Android TV"]
+        }
+      ],
+      "accessories": {
+        "title": "TV Accessories",
+        "items": ["TV Mounts", "Soundbars", "HDMI Cables", "Streaming Devices", "Remote Controls", "Antennas"]
+      },
+      "more": {
+        "title": "Discover More",
+        "items": ["Gaming TVs", "Home Theater", "Projectors", "Smart Home", "TV Deals"]
+      }
+    },
+    "Smartwatches": {
+      "columns": [
+        {
+          "title": "Brands",
+          "items": ["Apple Watch", "Samsung Galaxy Watch", "Garmin", "Fitbit", "Huawei", "Xiaomi", "Fossil", "Amazfit"]
+        },
+        {
+          "title": "Features",
+          "items": ["GPS", "Heart Rate Monitor", "Sleep Tracking", "NFC Payments", "Water Resistant", "ECG"]
+        }
+      ],
+      "accessories": {
+        "title": "Watch Accessories",
+        "items": ["Watch Bands", "Charging Cables", "Screen Protectors", "Watch Cases", "Docking Stations"]
+      },
+      "more": {
+        "title": "Discover More",
+        "items": ["Sports Watches", "Kids Smartwatches", "Luxury Watches", "Budget Picks", "New Arrivals"]
+      }
+    }
+  }
+}
