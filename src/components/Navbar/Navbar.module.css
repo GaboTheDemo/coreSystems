@@ -7,13 +7,39 @@
   width: 100%;
 }
 
-/* ── Top Bar ── */
 .topBar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 20px;
   padding: 10px 32px;
   background: #0d1b2e;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.searchForm {
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0; /* evita que se encoja */
+  /* ya no necesita margin-left: auto */
 }
 
 .logo {
@@ -31,8 +57,9 @@
 .logoSystems { color: #3ecfcf; }
 
 .searchForm {
-  flex: 1;
   max-width: 580px;
+  width: 100%;
+  margin: 0 20px 0 auto;   /* ← empuja el formulario hacia la derecha */
   display: flex;
   border-radius: 8px;
   overflow: hidden;
