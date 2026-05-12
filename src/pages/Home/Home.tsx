@@ -2,6 +2,7 @@
 import React, { useState, useRef } from 'react';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import { getSaleProducts } from '../../services/productService';
+import ChatWidget from '../../components/ChatWidget/ChatWidget';
 import styles from './Home.module.css';
 import type { Product } from '../../types';
 
@@ -64,8 +65,6 @@ const Home: React.FC = () => {
 
   return (
     <div className={styles.page}>
-      {/* Navbar eliminado - ahora es global en App.tsx */}
-
       {/* Hero Banner */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
@@ -119,6 +118,9 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* ── Floating Chat Widget ── */}
+      <ChatWidget />
     </div>
   );
 };
