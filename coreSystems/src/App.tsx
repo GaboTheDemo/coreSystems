@@ -1,7 +1,8 @@
 // src/App.tsx
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { CartProvider } from './context/CartContext';   // ← IMPORTAR
+import { CartProvider } from './context/CartContext';
+import { FavoritesProvider } from './context/FavoritesContext';   // ← importar
 import LoginPage from './pages/Login/LoginPage';
 import Home from './pages/Home/Home';
 import SearchResultsPage from './components/SearchResultsPage/SearchResultsPage';
@@ -25,11 +26,13 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <CartProvider>   {/* ← ENVOLVER AQUÍ */}
-        {!isAuthenticated
-          ? <LoginPage onSuccess={() => setIsAuthenticated(true)} />
-          : <AppLayout />
-        }
+      <CartProvider>
+        <FavoritesProvider>   {/* ← Añadir aquí */}
+          {!isAuthenticated
+            ? <LoginPage onSuccess={() => setIsAuthenticated(true)} />
+            : <AppLayout />
+          }
+        </FavoritesProvider>
       </CartProvider>
     </BrowserRouter>
   );

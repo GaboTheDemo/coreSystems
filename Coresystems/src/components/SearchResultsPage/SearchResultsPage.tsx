@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { searchProductsFull } from '../../services/searchService';
 import { useCart } from '../../context/CartContext';
+import { useFavorites } from '../../context/FavoritesContext'; // ← importación de favoritos
 import type { Product, SearchFilters, SortOption } from '../../types';
 import styles from './SearchResultsPage.module.css';
 
@@ -15,7 +16,9 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick }) => {
   const { addItem, openCart } = useCart();
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites(); // ← hook de favoritos
   const [added, setAdded] = useState(false);
+  const [favorited, setFavorited] = useState(() => isFavorite(product.id));
 
   const discount =
     product.originalPrice !== undefined && product.originalPrice > product.price
@@ -31,6 +34,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick }) =>
     openCart();
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
+  };
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (favorited) {
+      removeFavorite(product.id);
+      setFavorited(false);
+    } else {
+      addFavorite(product);
+      setFavorited(true);
+    }
   };
 
   return (
@@ -102,12 +116,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick }) =>
             </svg>
             Compare
           </button>
-          <button className={styles.actionBtn} onClick={e => e.stopPropagation()}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+
+          {/* Botón de favoritos actualizado */}
+          <button
+            className={styles.actionBtn}
+            onClick={handleFavorite}
+            style={{ color: favorited ? '#e53935' : undefined }}
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill={favorited ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
-            Add to favorites
+            {favorited ? 'Favorito' : 'Add to favorites'}
           </button>
+
           <button
             className={styles.actionBtn}
             onClick={e => { e.stopPropagation(); onProductClick(product); }}
