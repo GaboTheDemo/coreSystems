@@ -1,4 +1,3 @@
-// src/components/SearchResultsPage/SearchResultsPage.tsx
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { searchProductsFull } from '../../services/searchService';

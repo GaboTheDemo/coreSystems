@@ -1,15 +1,9 @@
 // src/pages/ProductDetailPage/ProductDetailPage.tsx
-// Página de detalle de producto.
-// Navega desde SearchResultsPage con: navigate(`/product/${product.slug ?? product.id}`)
-// Lee el param :slugOrId de la URL y busca el producto en el JSON local.
-
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import productsData from '../../data/products.json';
+import productsData from '../../data/longProducts.json'; // ← CAMBIO IMPORTANTE
 import type { Product } from '../../types';
 import styles from './ProductDetailPage.module.css';
-
-// ─── helpers ─────────────────────────────────────────────────────────────────
 
 const ALL_PRODUCTS = productsData as Product[];
 
@@ -23,8 +17,6 @@ function formatPrice(n: number) {
   return `$${n.toLocaleString('es-CO')} COP`;
 }
 
-// ─── Spec section block ───────────────────────────────────────────────────────
-
 interface SpecSectionProps {
   title: string;
   lines: string[];
@@ -37,8 +29,6 @@ const SpecSection: React.FC<SpecSectionProps> = ({ title, lines }) => (
     </ul>
   </div>
 );
-
-// ─── Related card ─────────────────────────────────────────────────────────────
 
 interface RelatedCardProps {
   product: Product;
@@ -54,19 +44,16 @@ const RelatedCard: React.FC<RelatedCardProps> = ({ product, onClick }) => (
   </button>
 );
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 const ProductDetailPage: React.FC = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
   const navigate = useNavigate();
 
   const product = useMemo(() => findProduct(slugOrId ?? ''), [slugOrId]);
 
-  const [quantity, setQuantity]         = useState(1);
-  const [activeThumb, setActiveThumb]   = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [activeThumb, setActiveThumb] = useState(0);
   const [specsExpanded, setSpecsExpanded] = useState(false);
 
-  // ── Related products (same category, excluding current) ──────────────────
   const related = useMemo(() => {
     if (!product) return [];
     return ALL_PRODUCTS
@@ -86,47 +73,78 @@ const ProductDetailPage: React.FC = () => {
     );
   }
 
-  // Build a small image gallery from the single image (mock multiple angles)
   const thumbs = [product.image, product.image, product.image];
-
   const discount = product.originalPrice && product.originalPrice > product.price
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
-  // Build spec sections from product.specs + description
-  const specSections = [
-    product.specs?.screenSize && {
-      title: 'Pantalla',
-      lines: [
-        `Tamaño: ${product.specs.screenSize}`,
-        'Pantalla Super Retina XDR OLED',
-        'Tecnología ProMotion hasta 120 Hz',
-      ],
-    },
-    product.specs?.ram && {
-      title: 'Memoria RAM',
-      lines: [`${product.specs.ram} de RAM`],
-    },
-    product.specs?.storage && {
-      title: 'Capacidad de almacenamiento',
-      lines: [product.specs.storage],
-    },
-    product.specs?.camera && {
-      title: 'Cámaras',
-      lines: [
-        `Cámara principal ${product.specs.camera}`,
-        'Grabación de video 4K',
-        'Cámara frontal 12 MP',
-      ],
-    },
-  ].filter(Boolean) as SpecSectionProps[];
+  // ─── Construcción DINÁMICA de especificaciones usando todas las claves de specs ───
+  const specSections: SpecSectionProps[] = [];
+  const specs = product.specs || {};
+
+  // Mapeo de claves a títulos en español
+  const titleMap: Record<string, string> = {
+    screenSize: 'Pantalla',
+    screenType: 'Tipo de pantalla',
+    resolution: 'Resolución',
+    refreshRate: 'Frecuencia',
+    panel: 'Panel',
+    hdr: 'HDR',
+    camera: 'Cámaras',
+    frontCamera: 'Cámara frontal',
+    videoRecording: 'Grabación de video',
+    processor: 'Procesador',
+    processorDetails: 'Detalles del procesador',
+    ram: 'Memoria RAM',
+    storage: 'Almacenamiento',
+    gpu: 'GPU',
+    battery: 'Batería',
+    charging: 'Carga',
+    chargingSpeed: 'Velocidad de carga',
+    connectivity: 'Conectividad',
+    gps: 'GPS',
+    simCard: 'SIM',
+    ports: 'Puertos',
+    audioOutput: 'Audio',
+    vrSupport: 'Soporte VR',
+    os: 'Sistema operativo',
+    smartOS: 'Smart OS',
+    sensors: 'Sensores',
+    emergencySOS: 'Emergencia SOS',
+    crashDetection: 'Detección de accidentes',
+    altimeter: 'Altímetro',
+    compass: 'Brújula',
+    spen: 'S Pen',
+    dimensions: 'Dimensiones',
+    weight: 'Peso',
+    waterResistance: 'Resistencia al agua',
+    body: 'Material',
+    wirelessCharging: 'Carga inalámbrica',
+    nfc: 'NFC',
+    keyboard: 'Teclado',
+    webcam: 'Webcam',
+    optical: 'Lector óptico',
+    coolingSystem: 'Sistema de refrigeración',
+    displayTech: 'Tecnología de pantalla',
+  };
+
+  // Agrupar especificaciones por clave (cada clave se convierte en una sección)
+  Object.entries(specs).forEach(([key, value]) => {
+    if (value && typeof value === 'string') {
+      const title = titleMap[key] || key.charAt(0).toUpperCase() + key.slice(1);
+      specSections.push({ title, lines: [value] });
+    }
+  });
+
+  // Si no hay especificaciones, mostrar un mensaje (opcional)
+  if (specSections.length === 0) {
+    specSections.push({ title: 'Especificaciones', lines: ['No hay información adicional'] });
+  }
 
   const visibleSpecs = specsExpanded ? specSections : specSections.slice(0, 2);
 
   return (
     <div className={styles.page}>
-
-      {/* ── Breadcrumb ── */}
       <nav className={styles.breadcrumb}>
         <button onClick={() => navigate('/')}>Home</button>
         <span>›</span>
@@ -137,10 +155,7 @@ const ProductDetailPage: React.FC = () => {
         <span>{product.name}</span>
       </nav>
 
-      {/* ── Hero ── */}
       <section className={styles.hero}>
-
-        {/* Thumbnails */}
         <div className={styles.thumbCol}>
           {thumbs.map((src, i) => (
             <button
@@ -153,28 +168,18 @@ const ProductDetailPage: React.FC = () => {
           ))}
         </div>
 
-        {/* Main image */}
         <div className={styles.mainImageWrap}>
-          {discount > 0 && (
-            <span className={styles.discountBadge}>-{discount}%</span>
-          )}
-          <img
-            src={thumbs[activeThumb]}
-            alt={product.name}
-            className={styles.mainImage}
-          />
+          {discount > 0 && <span className={styles.discountBadge}>-{discount}%</span>}
+          <img src={thumbs[activeThumb]} alt={product.name} className={styles.mainImage} />
         </div>
 
-        {/* Purchase panel */}
         <div className={styles.purchasePanel}>
           <h1 className={styles.productName}>{product.name}</h1>
 
-          {/* Rating */}
           {product.rating !== undefined && (
             <div className={styles.ratingRow}>
               <span className={styles.stars}>
-                {'★'.repeat(Math.round(product.rating))}
-                {'☆'.repeat(5 - Math.round(product.rating))}
+                {'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}
               </span>
               <span className={styles.ratingNum}>{product.rating.toFixed(1)}</span>
               {product.reviewCount !== undefined && (
@@ -183,16 +188,12 @@ const ProductDetailPage: React.FC = () => {
             </div>
           )}
 
-          {/* Badges */}
           {(product.badges ?? []).length > 0 && (
             <div className={styles.badgeRow}>
-              {product.badges!.map(b => (
-                <span key={b} className={styles.badge}>{b}</span>
-              ))}
+              {product.badges!.map(b => <span key={b} className={styles.badge}>{b}</span>)}
             </div>
           )}
 
-          {/* Price */}
           <div className={styles.priceBlock}>
             <span className={styles.price}>{formatPrice(product.price)}</span>
             {product.originalPrice && product.originalPrice > product.price && (
@@ -200,45 +201,28 @@ const ProductDetailPage: React.FC = () => {
             )}
           </div>
 
-          {/* Quantity */}
           <div className={styles.quantityRow}>
-            <button
-              className={styles.qtyBtn}
-              onClick={() => setQuantity(q => Math.max(1, q - 1))}
-              aria-label="Decrease quantity"
-            >−</button>
+            <button className={styles.qtyBtn} onClick={() => setQuantity(q => Math.max(1, q - 1))}>−</button>
             <span className={styles.qtyValue}>{quantity}</span>
-            <button
-              className={styles.qtyBtn}
-              onClick={() => setQuantity(q => q + 1)}
-              aria-label="Increase quantity"
-            >+</button>
+            <button className={styles.qtyBtn} onClick={() => setQuantity(q => q + 1)}>+</button>
           </div>
 
-          {/* CTAs */}
-          <button className={styles.addToCartBtn}>
-            Agregar al carrito
-          </button>
-          <button className={styles.buyNowBtn}>
-            Comprar
-          </button>
+          <button className={styles.addToCartBtn}>Agregar al carrito</button>
+          <button className={styles.buyNowBtn}>Comprar</button>
 
-          {/* Quick specs summary */}
           <ul className={styles.quickSpecs}>
-            {product.specs?.storage    && <li>· Capacidad de almacenamiento: {product.specs.storage}</li>}
-            {product.specs?.screenSize && <li>· Tamaño de la pantalla: {product.specs.screenSize}</li>}
-            {product.specs?.camera     && <li>· Cámara posterior: {product.specs.camera}</li>}
-            {product.specs?.ram        && <li>· Memoria RAM: {product.specs.ram}</li>}
-            {product.color             && <li>· Color: {product.color}</li>}
+            {specs.storage && <li>· Capacidad de almacenamiento: {specs.storage}</li>}
+            {specs.screenSize && <li>· Tamaño de la pantalla: {specs.screenSize}</li>}
+            {specs.camera && <li>· Cámara posterior: {specs.camera}</li>}
+            {specs.ram && <li>· Memoria RAM: {specs.ram}</li>}
+            {product.color && <li>· Color: {product.color}</li>}
           </ul>
 
-          {/* Stock */}
           {product.stock !== undefined && (
             <p className={styles.stock}>
               {product.stock > 0
                 ? <><span className={styles.inStock}>●</span> {product.stock} units available</>
-                : <><span className={styles.outStock}>●</span> Out of stock</>
-              }
+                : <><span className={styles.outStock}>●</span> Out of stock</>}
             </p>
           )}
         </div>
@@ -246,9 +230,7 @@ const ProductDetailPage: React.FC = () => {
 
       <hr className={styles.divider} />
 
-      {/* ── Description + Specs ── */}
       <section className={styles.detailSection}>
-
         {product.description && (
           <div className={styles.descBlock}>
             <h2 className={styles.sectionTitle}>Descripción general</h2>
@@ -256,15 +238,10 @@ const ProductDetailPage: React.FC = () => {
           </div>
         )}
 
-        {visibleSpecs.map(s => (
-          <SpecSection key={s.title} title={s.title} lines={s.lines} />
-        ))}
+        {visibleSpecs.map(s => <SpecSection key={s.title} title={s.title} lines={s.lines} />)}
 
         {specSections.length > 2 && (
-          <button
-            className={styles.toggleSpecs}
-            onClick={() => setSpecsExpanded(v => !v)}
-          >
+          <button className={styles.toggleSpecs} onClick={() => setSpecsExpanded(v => !v)}>
             {specsExpanded ? '∧ Ver menos' : '∨ Ver más especificaciones'}
           </button>
         )}
@@ -272,7 +249,6 @@ const ProductDetailPage: React.FC = () => {
 
       <hr className={styles.divider} />
 
-      {/* ── Related products ── */}
       {related.length > 0 && (
         <section className={styles.relatedSection}>
           <h2 className={styles.relatedTitle}>Más Productos</h2>
