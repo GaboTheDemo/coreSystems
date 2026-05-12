@@ -28,24 +28,103 @@ export interface LoginFormData {
 }
 
 // =========================
-// PRODUCTS (unificado con search.ts)
+// PRODUCTS
 // =========================
 
+/**
+ * ProductSpec unifica las especificaciones de TODAS las categorías.
+ * Todos los valores son string para mantener consistencia con el JSON
+ * y compatibilidad con el índice flexible.
+ *
+ * Categorías cubiertas:
+ *  - smartphones / tablets   → camera, frontCamera, storage, screenSize, ram, processor, battery,
+ *                              chargingSpeed, os, connectivity, dimensions, weight, waterResistance,
+ *                              screenType, refreshRate, resolution, simCard, videoRecording, spen,
+ *                              wirelessCharging, nfc, body
+ *  - smartwatches            → screenSize, screenType, resolution, battery, waterResistance, gps,
+ *                              connectivity, processor, storage, ram, os, sensors, chargingSpeed,
+ *                              body, dimensions, weight, emergencySOS, crashDetection, altimeter
+ *  - laptops                 → processor, storage, screenSize, ram, gpu, battery, chargingSpeed,
+ *                              os, connectivity, dimensions, weight, screenType, refreshRate,
+ *                              resolution, ports, keyboard, webcam
+ *  - televisions             → resolution, screenSize, panel, hdr, refreshRate, smartOS,
+ *                              connectivity, dimensions, weight, audioOutput, ports
+ *  - consoles                → processor, storage, resolution, ram, optical, connectivity,
+ *                              dimensions, weight, audioOutput, vrSupport
+ */
 export interface ProductSpec {
-  camera?: string;
-  storage?: string;
-  screenSize?: string;
-  ram?: string;
-  [key: string]: string | undefined; // índice flexible para otras especificaciones
+  // ── Pantalla ──────────────────────────────────────────────────────────────
+  screenSize?: string;          // "6.9 Inches" | "49mm" | "65 Inches"
+  screenType?: string;          // "Super Retina XDR OLED" | "Dynamic AMOLED 2X" | ...
+  resolution?: string;          // "2868 × 1320 px" | "4K UHD" | ...
+  refreshRate?: string;         // "1–120 Hz (ProMotion)" | "144 Hz"
+  panel?: string;               // para TVs: "OLED evo" | "LED Crystal UHD"
+  hdr?: string;                 // "Dolby Vision IQ" | "HDR10+"
+
+  // ── Cámara ────────────────────────────────────────────────────────────────
+  camera?: string;              // "48 MP" | "200 MP (Principal) + ..."
+  frontCamera?: string;         // "12 MP TrueDepth"
+  videoRecording?: string;      // "4K 120fps ProRes"
+
+  // ── Rendimiento ───────────────────────────────────────────────────────────
+  processor?: string;           // "Apple A19 Pro" | "Snapdragon 8 Elite"
+  ram?: string;                 // "12 GB"
+  storage?: string;             // "512 GB" | "1 TB SSD"
+  gpu?: string;                 // "NVIDIA RTX 4070" (laptops gaming)
+
+  // ── Batería y carga ───────────────────────────────────────────────────────
+  battery?: string;             // "4,685 mAh" | "hasta 60 horas"
+  chargingSpeed?: string;       // "30W cableado / 20W MagSafe"
+
+  // ── Conectividad ──────────────────────────────────────────────────────────
+  connectivity?: string;        // "5G, Wi-Fi 7, Bluetooth 5.3, NFC"
+  gps?: string;                 // "GPS de doble frecuencia L1 + L5"
+  simCard?: string;             // "Nano SIM + eSIM"
+  ports?: string;               // "2× USB-C Thunderbolt 4, HDMI, SD"
+  audioOutput?: string;         // "60W" | "Dolby Atmos"
+  vrSupport?: string;           // "PlayStation VR2"
+
+  // ── SO y software ─────────────────────────────────────────────────────────
+  os?: string;                  // "iOS 18" | "Android 15 + One UI 7"
+  smartOS?: string;             // para TVs: "Tizen 8.0" | "webOS 24"
+
+  // ── Sensores (smartwatches) ───────────────────────────────────────────────
+  sensors?: string;             // "Frecuencia cardiaca, ECG, SpO2, ..."
+  emergencySOS?: string;        // "Sí"
+  crashDetection?: string;      // "Sí"
+  altimeter?: string;           // "Sí"
+  compass?: string;             // "Sí"
+  spen?: string;                // "Incluido" (Samsung Ultra)
+
+  // ── Físico ────────────────────────────────────────────────────────────────
+  dimensions?: string;          // "163.0 × 77.6 × 8.3 mm"
+  weight?: string;              // "227 g"
+  waterResistance?: string;     // "IP68" | "100m (EN 13319)"
+  body?: string;                // "Titanio grado 5" | "Aluminio aeroespacial"
+
+  // ── Características adicionales ───────────────────────────────────────────
+  wirelessCharging?: string;    // "Sí — MagSafe 20W"
+  nfc?: string;                 // "Sí"
+  keyboard?: string;            // "Retroiluminado Magic Keyboard"
+  webcam?: string;              // "1080p FaceTime HD"
+  optical?: string;             // "Lector de disco" | "Digital"
+
+  // ── Laptops / Gaming extra ────────────────────────────────────────────────
+  coolingSystem?: string;       // "Liquid Metal + Triple Fan"
+  displayTech?: string;         // "Mini-LED" | "IPS"
+
+  // Índice flexible: permite campos futuros sin romper el tipo.
+  // IMPORTANTE: todos los valores deben ser string (nunca boolean/number) en el JSON.
+  [key: string]: string | undefined;
 }
 
 export interface Product {
-  id: string | number;        // compatible con number del primer tipo y string del segundo
+  id: string | number;
   name: string;
   slug?: string;
-  brand: string;              // lo hacemos obligatorio porque la página lo usa sin `?`
+  brand: string;
   price: number;
-  originalPrice?: number;     // opcional por si algún producto no tiene oferta
+  originalPrice?: number;
   image: string;
   category: string;
   subcategory?: string;
@@ -56,10 +135,9 @@ export interface Product {
   isOnSale?: boolean;
   discount?: number;
   color?: string;
-  specs: ProductSpec;         // ahora siempre presente, pero puede ser vacío
-  badges?: string[];           // array (puede estar vacío)
+  specs: ProductSpec;
+  badges?: string[];
   description?: string;
-  // Campos extra del primer tipo (poco usados)
   discountPercent?: number;
   avatar?: string;
   createdAt?: string;
@@ -148,7 +226,7 @@ export interface HeroBanner {
 }
 
 // =========================
-// SEARCH & FILTERS (unificado con search.ts)
+// SEARCH & FILTERS
 // =========================
 
 export type SortOption = 'relevance' | 'price_asc' | 'price_desc' | 'rating' | 'newest';
@@ -179,5 +257,4 @@ export interface SearchResult {
   };
 }
 
-// Para compatibilidad con el primer servicio (si se necesita)
 export type ActiveFilters = SearchFilters;
