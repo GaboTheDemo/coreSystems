@@ -2,82 +2,44 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import sellerData from '../../data/sellerData.json';
+import SellerChatWidget from '../../components/SellerChatWidget/SellerChatWidget';
 import styles from './SellerHome.module.css';
 
-// ── Datos del vendedor desde JSON ──
 const { username, storeName } = sellerData.seller;
-
-// ── Datos estáticos ─────────────────────────────────────────────────────────
 
 const NAV_ITEMS = ['Dashboard', 'Products', 'Orders', 'Analytics', 'Customers', 'Promotions', 'Settings'];
 
 const STATS = [
-  {
-    label: 'Total Sales', value: '$0.00',
-    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
-  },
-  {
-    label: 'Active Listings', value: '0',
-    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>,
-  },
-  {
-    label: 'Orders', value: '0',
-    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
-  },
-  {
-    label: 'Reviews', value: '0',
-    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
-  },
+  { label: 'Total Sales', value: '$0.00', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
+  { label: 'Active Listings', value: '0', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> },
+  { label: 'Orders', value: '0', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> },
+  { label: 'Reviews', value: '0', icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> },
 ];
 
 const FEATURE_CARDS = [
-  {
-    label: 'Add Product',
-    desc: 'List your tech products and reach thousands of buyers instantly.',
-    icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>,
-  },
-  {
-    label: 'Manage Orders',
-    desc: 'Track, process and ship your pending orders with ease.',
-    icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>,
-  },
-  {
-    label: 'View Analytics',
-    desc: "See how your store is performing today with real-time insights.",
-    icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
-  },
-  {
-    label: 'Store Settings',
-    desc: 'Customize your store profile, shipping policies and more.',
-    icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
-  },
+  { label: 'Add Product', desc: 'List your tech products and reach thousands of buyers instantly.', icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
+  { label: 'Manage Orders', desc: 'Track, process and ship your pending orders with ease.', icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> },
+  { label: 'View Analytics', desc: 'See how your store is performing today with real-time insights.', icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
+  { label: 'Store Settings', desc: 'Customize your store profile, shipping policies and more.', icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> },
 ];
 
 const TIPS = [
-  { title: 'Complete your profile', desc: 'Stores with complete profiles sell 3x more.', done: false },
-  { title: 'Add your first product', desc: 'Upload photos, set a price and go live.', done: false },
-  { title: 'Set up shipping', desc: 'Define your shipping zones and rates.', done: false },
-  { title: 'Activate promotions', desc: 'Run your first discount campaign.', done: false },
+  { title: 'Complete your profile', desc: 'Stores with complete profiles sell 3x more.' },
+  { title: 'Add your first product', desc: 'Upload photos, set a price and go live.' },
+  { title: 'Set up shipping', desc: 'Define your shipping zones and rates.' },
+  { title: 'Activate promotions', desc: 'Run your first discount campaign.' },
 ];
-
-// ── Component ─────────────────────────────────────────────────────────────────
 
 const SellerHome: React.FC = () => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState('Dashboard');
   const scrollRef = useRef<HTMLDivElement>(null);
-
   const scrollRight = () => scrollRef.current?.scrollBy({ left: 260, behavior: 'smooth' });
 
   return (
     <div className={styles.page}>
 
-      {/* ══════════════════════════════
-          NAVBAR  — mismo estilo que Navbar.tsx
-      ══════════════════════════════ */}
       <header className={styles.header}>
-
-        {/* Top bar */}
         <div className={styles.topBar}>
           <div className={styles.logo} onClick={() => navigate('/')}>
             <span className={styles.logoDot1}>●</span>
@@ -88,27 +50,18 @@ const SellerHome: React.FC = () => {
             </span>
             <span className={styles.sellerBadge}>Seller</span>
           </div>
-
-          {/* Search — misma forma que el Navbar global */}
           <form className={styles.searchForm} onSubmit={e => e.preventDefault()}>
-            <input
-              className={styles.searchInput}
-              type="text"
-              placeholder="Search your products, orders…"
-              autoComplete="off"
-            />
+            <input className={styles.searchInput} type="text" placeholder="Search your products, orders…" autoComplete="off" />
             <button className={styles.searchBtn} type="submit">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
             </button>
           </form>
-
           <nav className={styles.topActions}>
             <button className={styles.iconBtn} aria-label="Notifications">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
             </button>
             <button className={styles.iconBtn} aria-label="Messages">
@@ -120,51 +73,31 @@ const SellerHome: React.FC = () => {
           </nav>
         </div>
 
-        {/* Category nav — mismo estilo, items de seller */}
         <nav className={styles.catNav}>
           {NAV_ITEMS.map(item => (
-            <button
-              key={item}
-              className={`${styles.catItem} ${activeNav === item ? styles.catItemActive : ''}`}
-              onClick={() => setActiveNav(item)}
-            >
+            <button key={item} className={`${styles.catItem} ${activeNav === item ? styles.catItemActive : ''}`} onClick={() => setActiveNav(item)}>
               {item}
             </button>
           ))}
-          <button className={styles.newProductBtn} onClick={() => {}}>
-            + New Product
-          </button>
+          <button className={styles.newProductBtn}>+ New Product</button>
         </nav>
       </header>
 
-      {/* ══════════════════════════════
-          MAIN CONTENT
-      ══════════════════════════════ */}
       <main className={styles.main}>
-
-        {/* ── Hero Banner — mismo estilo que Home ── */}
         <section className={styles.hero}>
           <div className={styles.heroContent}>
-            <h1 className={styles.heroTitle}>
-              Welcome, <span className={styles.heroName}>{username}</span>!
-            </h1>
-            <p className={styles.heroSubtitle}>
-              Your store <strong>{storeName}</strong> is live and ready.{' '}
-              Start adding products to reach thousands of customers.
-            </p>
+            <h1 className={styles.heroTitle}>Welcome, <span className={styles.heroName}>{username}</span>!</h1>
+            <p className={styles.heroSubtitle}>Your store <strong>{storeName}</strong> is live and ready. Start adding products to reach thousands of customers.</p>
             <div className={styles.heroCtas}>
               <button className={styles.ctaPrimary}>Add Your First Product ›</button>
               <button className={styles.ctaSecondary}>View Store Guide</button>
             </div>
           </div>
           <div className={styles.heroDots}>
-            {[0,1,2,3,4,5].map(i => (
-              <span key={i} className={`${styles.dot} ${i === 0 ? styles.dotActive : ''}`}/>
-            ))}
+            {[0,1,2,3,4,5].map(i => <span key={i} className={`${styles.dot} ${i === 0 ? styles.dotActive : ''}`}/>)}
           </div>
         </section>
 
-        {/* ── Stats — misma grid que Home features ── */}
         <section className={styles.statsGrid}>
           {STATS.map(s => (
             <div key={s.label} className={styles.statCard}>
@@ -177,7 +110,6 @@ const SellerHome: React.FC = () => {
           ))}
         </section>
 
-        {/* ── Feature cards — mismo componente que Home ── */}
         <section className={styles.features}>
           <h2 className={styles.sectionTitle}>Check some of these things out!</h2>
           <div className={styles.featureGrid}>
@@ -191,7 +123,6 @@ const SellerHome: React.FC = () => {
           </div>
         </section>
 
-        {/* ── Getting started checklist — scroll horizontal como Home ── */}
         <section className={styles.tipsSection}>
           <div className={styles.tipsSectionInner}>
             <h2 className={styles.sectionTitle}>Getting started</h2>
@@ -214,7 +145,6 @@ const SellerHome: React.FC = () => {
           </div>
         </section>
 
-        {/* ── Recent activity ── */}
         <section className={styles.activitySection}>
           <div className={styles.activityInner}>
             <h2 className={styles.sectionTitle}>Recent Activity</h2>
@@ -229,8 +159,11 @@ const SellerHome: React.FC = () => {
             </div>
           </div>
         </section>
-
       </main>
+
+      {/* ── Chat widget flotante del vendedor ── */}
+      <SellerChatWidget />
+
     </div>
   );
 };

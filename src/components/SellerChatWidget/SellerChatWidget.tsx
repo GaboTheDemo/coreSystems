@@ -1,15 +1,15 @@
-// src/components/ChatWidget/ChatWidget.tsx
+// src/components/SellerChatWidget/SellerChatWidget.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { useChat } from '../../context/ChatContext';
-import styles from './ChatWidget.module.css';
+import styles from './SellerChatWidget.module.css';
 
-const BUYER_NAME = 'You';
-const BUYER_INITIAL = 'Y';
+const SELLER_NAME = 'Thomas';
 const SELLER_INITIAL = 'T';
-const STORE_NAME = 'CoreSystems Store';
+const BUYER_INITIAL = 'Y';
+const BUYER_DISPLAY = 'Customer';
 
-const ChatWidget: React.FC = () => {
-  const { messages, buyerUnread, sendMessage, markAsRead } = useChat();
+const SellerChatWidget: React.FC = () => {
+  const { messages, sellerUnread, sendMessage, markAsRead } = useChat();
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -17,7 +17,7 @@ const ChatWidget: React.FC = () => {
 
   useEffect(() => {
     if (isOpen) {
-      markAsRead('buyer');
+      markAsRead('seller');
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         inputRef.current?.focus();
@@ -28,7 +28,7 @@ const ChatWidget: React.FC = () => {
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      markAsRead('buyer');
+      markAsRead('seller');
     }
   }, [messages, isOpen, markAsRead]);
 
@@ -38,7 +38,7 @@ const ChatWidget: React.FC = () => {
   const handleSend = () => {
     const text = inputValue.trim();
     if (!text) return;
-    sendMessage(text, 'buyer', BUYER_NAME);
+    sendMessage(text, 'seller', SELLER_NAME);
     setInputValue('');
   };
 
@@ -53,28 +53,28 @@ const ChatWidget: React.FC = () => {
           {/* Header */}
           <div className={styles.chatHeader}>
             <div className={styles.headerLeft}>
-              <div className={styles.sellerAvatar}>{SELLER_INITIAL}</div>
+              <div className={styles.buyerAvatar}>{BUYER_INITIAL}</div>
               <div className={styles.headerInfo}>
-                <span className={styles.headerName}>{STORE_NAME}</span>
+                <span className={styles.headerName}>{BUYER_DISPLAY}</span>
                 <span className={styles.headerStatus}>
-                  <span className={styles.onlineDot} /> Online
+                  <span className={styles.onlineDot} /> Active now
                 </span>
               </div>
             </div>
             <div className={styles.headerActions}>
-              <button className={styles.headerBtn} aria-label="Search messages">
+              <button className={styles.headerBtn} aria-label="Search">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
               </button>
-              <button className={styles.headerBtn} aria-label="Delete chat">
+              <button className={styles.headerBtn} aria-label="Delete">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <polyline points="3 6 5 6 21 6"/>
                   <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
                   <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
                 </svg>
               </button>
-              <button className={styles.closeBtn} onClick={() => setIsOpen(false)} aria-label="Close chat">
+              <button className={styles.closeBtn} onClick={() => setIsOpen(false)} aria-label="Close">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
@@ -87,39 +87,43 @@ const ChatWidget: React.FC = () => {
             <aside className={styles.sidebar}>
               <div className={styles.sidebarGrid} />
               <div className={styles.sidebarAvatarBottom}>
-                <div className={styles.buyerAvatarSm}>{BUYER_INITIAL}</div>
+                <div className={styles.sellerAvatarSm}>{SELLER_INITIAL}</div>
               </div>
             </aside>
 
             <div className={styles.messages}>
-              {messages.map(msg => (
-                <div
-                  key={msg.id}
-                  className={`${styles.messageRow} ${msg.sender === 'buyer' ? styles.messageRowBuyer : styles.messageRowSeller}`}
-                >
-                  {msg.sender === 'seller' && (
-                    <div className={styles.msgAvatar}>{SELLER_INITIAL}</div>
-                  )}
-                  <div className={styles.messageWrap}>
-                    <div className={`${styles.bubble} ${msg.sender === 'buyer' ? styles.bubbleBuyer : styles.bubbleSeller}`}>
-                      {msg.text}
+              {messages.map(msg => {
+                // From seller's POV: seller messages appear on the right (as "me")
+                const isMe = msg.sender === 'seller';
+                return (
+                  <div
+                    key={msg.id}
+                    className={`${styles.messageRow} ${isMe ? styles.messageRowMe : styles.messageRowOther}`}
+                  >
+                    {!isMe && (
+                      <div className={styles.msgAvatar}>{BUYER_INITIAL}</div>
+                    )}
+                    <div className={styles.messageWrap}>
+                      <div className={`${styles.bubble} ${isMe ? styles.bubbleMe : styles.bubbleOther}`}>
+                        {msg.text}
+                      </div>
+                      <div className={`${styles.msgMeta} ${isMe ? styles.msgMetaRight : ''}`}>
+                        <button className={styles.shareBtn} aria-label="Share">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                          </svg>
+                        </button>
+                        <span className={styles.msgTime}>{formatTime(msg.timestamp)}</span>
+                      </div>
                     </div>
-                    <div className={`${styles.msgMeta} ${msg.sender === 'buyer' ? styles.msgMetaRight : ''}`}>
-                      <button className={styles.shareBtn} aria-label="Share">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                        </svg>
-                      </button>
-                      <span className={styles.msgTime}>{formatTime(msg.timestamp)}</span>
-                    </div>
+                    {isMe && (
+                      <div className={styles.msgAvatar}>{SELLER_INITIAL}</div>
+                    )}
                   </div>
-                  {msg.sender === 'buyer' && (
-                    <div className={styles.msgAvatar}>{BUYER_INITIAL}</div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
               <div ref={messagesEndRef} />
             </div>
           </div>
@@ -130,7 +134,7 @@ const ChatWidget: React.FC = () => {
               ref={inputRef}
               className={styles.textInput}
               type="text"
-              placeholder="Type a new message here"
+              placeholder="Reply to customer..."
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -164,7 +168,7 @@ const ChatWidget: React.FC = () => {
       <button
         className={`${styles.fab} ${isOpen ? styles.fabOpen : ''}`}
         onClick={() => setIsOpen(o => !o)}
-        aria-label="Chat with seller"
+        aria-label="Customer messages"
       >
         {isOpen ? (
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -175,15 +179,15 @@ const ChatWidget: React.FC = () => {
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
-            <span className={styles.fabLabel}>Chat with us</span>
+            <span className={styles.fabLabel}>Customer messages</span>
           </>
         )}
-        {!isOpen && buyerUnread > 0 && (
-          <span className={styles.fabBadge}>{buyerUnread > 9 ? '9+' : buyerUnread}</span>
+        {!isOpen && sellerUnread > 0 && (
+          <span className={styles.fabBadge}>{sellerUnread > 9 ? '9+' : sellerUnread}</span>
         )}
       </button>
     </div>
   );
 };
 
-export default ChatWidget;
+export default SellerChatWidget;
