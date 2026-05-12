@@ -24,30 +24,11 @@
   flex-shrink: 0;
 }
 
-.logoDot1 {
-  font-size: 20px;
-  color: #3ecfcf;
-}
-
-.logoDot2 {
-  font-size: 22px;
-  color: #7c4dff;
-  margin-left: -8px;
-}
-
-.logoText {
-  font-size: 18px;
-  font-weight: 700;
-  margin-left: 4px;
-}
-
-.logoCore {
-  color: #fff;
-}
-
-.logoSystems {
-  color: #3ecfcf;
-}
+.logoDot1 { font-size: 20px; color: #3ecfcf; }
+.logoDot2 { font-size: 22px; color: #7c4dff; margin-left: -8px; }
+.logoText  { font-size: 18px; font-weight: 700; margin-left: 4px; }
+.logoCore  { color: #fff; }
+.logoSystems { color: #3ecfcf; }
 
 .searchForm {
   flex: 1;
@@ -66,6 +47,11 @@
   font-size: 14px;
   color: #222;
   background: transparent;
+  transition: background 0.2s;
+}
+
+.searchInputActive {
+  background: #f0fbfb;
 }
 
 .searchBtn {
@@ -79,10 +65,7 @@
   justify-content: center;
   transition: background 0.2s;
 }
-
-.searchBtn:hover {
-  background: #2ab8b8;
-}
+.searchBtn:hover { background: #2ab8b8; }
 
 .topActions {
   display: flex;
@@ -102,36 +85,30 @@
   align-items: center;
   transition: color 0.2s, background 0.2s;
 }
-
-.iconBtn:hover {
-  color: #3ecfcf;
-  background: rgba(255,255,255,0.07);
-}
+.iconBtn:hover { color: #3ecfcf; background: rgba(255,255,255,0.07); }
 
 .cartBadge {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 0; right: 0;
   background: #ff4d6d;
   color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  width: 16px;
-  height: 16px;
+  font-size: 10px; font-weight: 700;
+  width: 16px; height: 16px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
 }
 
 /* ── Category Nav ── */
+/* KEY: position:relative here so the full-width dropdown is anchored to the NAV, not each item */
 .catNav {
   display: flex;
   align-items: center;
+  justify-content: center;  /* ← centers all items horizontally */
   gap: 2px;
   padding: 0 32px;
   background: #1a2d45;
   border-bottom: 2px solid #263a52;
+  position: relative;       /* ← anchor point for the dropdown */
 }
 
 .allCategoriesBtn {
@@ -148,18 +125,14 @@
   white-space: nowrap;
   transition: color 0.2s;
 }
+.allCategoriesBtn:hover { color: #3ecfcf; }
 
-.allCategoriesBtn:hover {
-  color: #3ecfcf;
-}
+.hamburger { font-size: 20px; line-height: 1; }
 
-.hamburger {
-  font-size: 20px;
-  line-height: 1;
-}
-
+/* Each nav item — no position:relative here anymore */
 .catItemWrapper {
-  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .catItem {
@@ -174,53 +147,30 @@
   transition: color 0.2s, border-color 0.2s;
   white-space: nowrap;
 }
-
 .catItem:hover,
 .catItemActive {
   color: #fff;
   border-bottom-color: #3ecfcf;
 }
 
-.trending {
-  color: #3ecfcf !important;
-  font-weight: 600;
-}
+.trending  { color: #3ecfcf !important; font-weight: 600; }
+.trending:hover { color: #56dfdf !important; }
+.onSale    { color: #ff9f43 !important; font-weight: 600; }
+.onSale:hover { color: #ffb566 !important; }
 
-.trending:hover {
-  color: #56dfdf !important;
-}
-
-.onSale {
-  color: #ff9f43 !important;
-  font-weight: 600;
-}
-
-.onSale:hover {
-  color: #ffb566 !important;
-}
-
-/* ── Dropdown Wrapper ── */
+/* ── Dropdown — full width, anchored to catNav ── */
 .dropdownWrapper {
   position: absolute;
-  top: 100%;
-  left: 0;
+  top: 100%;    /* flush below the catNav bar */
+  left: 0;      /* always starts from the left edge of catNav */
+  right: 0;     /* stretches to the right edge */
   z-index: 500;
+  /* No width override needed — left+right handle it */
 }
 
+/* ── Responsive ── */
 @media (max-width: 768px) {
-  .catNav {
-    overflow-x: auto;
-    padding: 0 16px;
-  }
-
-  .topBar {
-    padding: 10px 16px;
-    flex-wrap: wrap;
-  }
-
-  .searchForm {
-    order: 3;
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+  .catNav { overflow-x: auto; padding: 0 16px; }
+  .topBar { padding: 10px 16px; flex-wrap: wrap; }
+  .searchForm { order: 3; flex: 0 0 100%; max-width: 100%; }
 }
