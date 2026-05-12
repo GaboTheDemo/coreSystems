@@ -33,7 +33,7 @@ export interface LoginFormData {
 
 export interface ProductSpec {
   camera?: string;
-  storage?: string;Q
+  storage?: string;
   screenSize?: string;
   ram?: string;
   [key: string]: string | undefined; // índice flexible para otras especificaciones
