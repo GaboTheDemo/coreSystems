@@ -1,6 +1,5 @@
 // src/pages/Home/Home.tsx
 import React, { useState, useRef } from 'react';
-import Navbar from '../../components/Navbar/Navbar';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import { getSaleProducts } from '../../services/productService';
 import styles from './Home.module.css';
@@ -65,7 +64,7 @@ const Home: React.FC = () => {
 
   return (
     <div className={styles.page}>
-      <Navbar />
+      {/* Navbar eliminado - ahora es global en App.tsx */}
 
       {/* Hero Banner */}
       <section className={styles.hero}>

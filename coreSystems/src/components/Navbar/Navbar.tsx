@@ -1,5 +1,6 @@
 // src/components/Navbar/Navbar.tsx
 import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getAllCategories } from '../../services/categoryService';
 import CategoryDropdown from '../CategoryDropdown/CategoryDropdown';
 import SearchOverlay from '../SearchOverlay/SearchOverlay';
@@ -7,19 +8,20 @@ import type { SearchProduct } from '../../services/searchService';
 import styles from './Navbar.module.css';
 
 interface NavbarProps {
-  onSearch?: (query: string) => void;
   onLogoClick?: () => void;
-  onProductClick?: (product: SearchProduct) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onSearch, onLogoClick, onProductClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
+  const navigate = useNavigate();
   const categories = getAllCategories();
-  const [searchValue, setSearchValue] = useState('');
-  const [searchOpen, setSearchOpen] = useState(false);
+
+  const [searchValue, setSearchValue]     = useState('');
+  const [searchOpen, setSearchOpen]       = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [cartCount] = useState(0);
+  const [cartCount]                       = useState(0);
+
   const hideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef    = useRef<HTMLInputElement>(null);
 
   // ── Category hover ─────────────────────────────────────────────────────────
   const handleMouseEnter = (categoryId: string) => {
@@ -34,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onLogoClick, onProductClick }
   const activeData = categories.find(c => c.id === activeCategory);
 
   // ── Search ────────────────────────────────────────────────────────────────
-  const openSearch = () => setSearchOpen(true);
+  const openSearch  = () => setSearchOpen(true);
   const closeSearch = () => setSearchOpen(false);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,15 +49,26 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onLogoClick, onProductClick }
     inputRef.current?.focus();
   };
 
+  /**
+   * Al enviar el formulario: cierra el overlay y navega a la
+   * página de resultados pasando la query como search param.
+   */
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch?.(searchValue);
+    const q = searchValue.trim();
+    if (!q) return;
     closeSearch();
+    navigate(`/search?q=${encodeURIComponent(q)}`);
   };
 
+  /**
+   * Al hacer click en un producto desde el overlay rápido,
+   * navega al detalle del producto (o a la búsqueda con su nombre).
+   */
   const handleProductClick = (product: SearchProduct) => {
     closeSearch();
-    onProductClick?.(product);
+    // Si tienes ruta de detalle: navigate(`/product/${product.slug}`);
+    navigate(`/search?q=${encodeURIComponent(product.name)}`);
   };
 
   return (
@@ -113,11 +126,6 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onLogoClick, onProductClick }
         </div>
 
         {/* ── Category Nav ── */}
-        {/*
-          The nav itself has position:relative, so the dropdownWrapper
-          (position:absolute left:0 right:0) always stretches the full
-          width of the navbar — regardless of which category is hovered.
-        */}
         <nav
           className={styles.catNav}
           onMouseLeave={handleMouseLeave}
@@ -146,7 +154,6 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onLogoClick, onProductClick }
             </div>
           ))}
 
-          {/* Dropdown lives INSIDE nav but OUTSIDE individual items → always full-width */}
           {activeCategory && activeData && (
             <div
               className={styles.dropdownWrapper}
