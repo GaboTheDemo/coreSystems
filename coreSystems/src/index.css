@@ -1,0 +1,62 @@
+/* src/index.css */
+/* Global reset and CSS custom properties for CoreSystems */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-primary: #2a7f8f;
+  --color-primary-dark: #1f6370;
+  --color-accent: #26bfbf;
+  --color-accent-light: #a5f3fc;
+  --color-sale: #fde68a;
+
+  --color-navy: #0d1b2a;
+  --color-teal-nav: #2a7f8f;
+
+  --color-text: #111111;
+  --color-text-muted: #666666;
+  --color-border: #c4c4c4;
+  --color-bg: #ffffff;
+  --color-bg-alt: #f8f9fa;
+
+  --radius-pill: 28px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.08);
+}
+
+html {
+  font-family: var(--font-main);
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+ul, ol {
+  list-style: none;
+}

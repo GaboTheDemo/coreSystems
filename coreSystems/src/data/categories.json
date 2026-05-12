@@ -1,0 +1,298 @@
+[
+  {
+    "id": "smartphones",
+    "label": "Smartphones",
+    "icon": "smartphone",
+    "sections": {
+      "main": {
+        "title": "Smartphones",
+        "filters": [
+          {
+            "label": "Brands",
+            "items": ["iPhone", "Samsung", "Xiaomi", "Motorola", "vivo", "Oppo", "Realme", "ZTE", "TCL", "Kalley", "Honor", "Tecno", "Infinix", "Poco"]
+          },
+          {
+            "label": "Storage capacity",
+            "items": ["64 GB", "128 GB", "256", "512", "1T", "1 2T"]
+          },
+          {
+            "label": "RAM memory",
+            "items": ["2 GB", "3 GB", "4 GB", "6 GB", "8 GB", "12 GB"]
+          }
+        ]
+      },
+      "accessories": {
+        "title": "Accessories",
+        "items": [
+          {
+            "label": "Mobile & Tablet Accessories",
+            "items": ["Cases and Covers", "Headphones and Hands-Free", "Micro SD Memory Cards", "External Power Bank Batteries", "Cables, Chargers, Adapters", "Bases and Stands"]
+          }
+        ]
+      },
+      "more": {
+        "title": "More",
+        "label": "Discover More",
+        "items": ["Free Insurance", "Trade-In Plan", "Cheap Phones", "Mobile Phone Launches", "SIM Cards"]
+      }
+    }
+  },
+  {
+    "id": "laptops",
+    "label": "Laptops",
+    "icon": "laptop",
+    "sections": {
+      "main": {
+        "title": "Laptops",
+        "filters": [
+          {
+            "label": "Brands",
+            "items": ["Apple", "Dell", "HP", "Lenovo", "Asus", "Acer", "MSI", "Razer", "Microsoft", "Samsung"]
+          },
+          {
+            "label": "Processor",
+            "items": ["Intel Core i3", "Intel Core i5", "Intel Core i7", "Intel Core i9", "AMD Ryzen 5", "AMD Ryzen 7", "AMD Ryzen 9", "Apple M1", "Apple M2", "Apple M3"]
+          },
+          {
+            "label": "RAM",
+            "items": ["4 GB", "8 GB", "16 GB", "32 GB", "64 GB"]
+          }
+        ]
+      },
+      "accessories": {
+        "title": "Accessories",
+        "items": [
+          {
+            "label": "Laptop Accessories",
+            "items": ["Laptop Bags & Cases", "Cooling Pads", "External Keyboards", "Laptop Stands", "Docking Stations", "External Monitors"]
+          }
+        ]
+      },
+      "more": {
+        "title": "More",
+        "label": "Discover More",
+        "items": ["Gaming Laptops", "Ultrabooks", "2-in-1 Laptops", "Laptop Deals", "Refurbished Laptops"]
+      }
+    }
+  },
+  {
+    "id": "tablets",
+    "label": "Tablets",
+    "icon": "tablet",
+    "sections": {
+      "main": {
+        "title": "Tablets",
+        "filters": [
+          {
+            "label": "Brands",
+            "items": ["Apple iPad", "Samsung", "Lenovo", "Huawei", "Amazon Fire", "Microsoft Surface", "Xiaomi"]
+          },
+          {
+            "label": "Screen Size",
+            "items": ["7\"", "8\"", "10\"", "11\"", "12\"", "13\""]
+          },
+          {
+            "label": "Storage",
+            "items": ["32 GB", "64 GB", "128 GB", "256 GB", "512 GB", "1 TB"]
+          }
+        ]
+      },
+      "accessories": {
+        "title": "Accessories",
+        "items": [
+          {
+            "label": "Tablet Accessories",
+            "items": ["Tablet Cases", "Stylus Pens", "Keyboard Covers", "Screen Protectors", "Tablet Stands", "Chargers"]
+          }
+        ]
+      },
+      "more": {
+        "title": "More",
+        "label": "Discover More",
+        "items": ["Drawing Tablets", "Kids Tablets", "Tablet Bundles", "Refurbished Tablets", "E-Readers"]
+      }
+    }
+  },
+  {
+    "id": "consoles",
+    "label": "Consoles",
+    "icon": "gamepad",
+    "sections": {
+      "main": {
+        "title": "Consoles",
+        "filters": [
+          {
+            "label": "Brands",
+            "items": ["Sony PlayStation", "Microsoft Xbox", "Nintendo", "Valve Steam"]
+          },
+          {
+            "label": "Type",
+            "items": ["Home Console", "Handheld", "Hybrid", "Retro Mini"]
+          },
+          {
+            "label": "Generation",
+            "items": ["Current Gen", "Last Gen", "Retro"]
+          }
+        ]
+      },
+      "accessories": {
+        "title": "Accessories",
+        "items": [
+          {
+            "label": "Console Accessories",
+            "items": ["Controllers", "Headsets", "Charging Stations", "Memory Cards", "Console Skins", "Gaming Chairs"]
+          }
+        ]
+      },
+      "more": {
+        "title": "More",
+        "label": "Discover More",
+        "items": ["New Releases", "Game Bundles", "Pre-Order Games", "Digital Games", "Console Trade-In"]
+      }
+    }
+  },
+  {
+    "id": "televisions",
+    "label": "Televisions",
+    "icon": "tv",
+    "sections": {
+      "main": {
+        "title": "Televisions",
+        "filters": [
+          {
+            "label": "Brands",
+            "items": ["Samsung", "LG", "Sony", "TCL", "Hisense", "Philips", "Panasonic", "Sharp"]
+          },
+          {
+            "label": "Screen Size",
+            "items": ["32\"", "43\"", "50\"", "55\"", "65\"", "75\"", "85\"", "98\""]
+          },
+          {
+            "label": "Technology",
+            "items": ["LED", "QLED", "OLED", "QNED", "MiniLED", "Neo QLED"]
+          }
+        ]
+      },
+      "accessories": {
+        "title": "Accessories",
+        "items": [
+          {
+            "label": "TV Accessories",
+            "items": ["TV Mounts", "Soundbars", "Remote Controls", "HDMI Cables", "Streaming Devices", "Antenna"]
+          }
+        ]
+      },
+      "more": {
+        "title": "More",
+        "label": "Discover More",
+        "items": ["Smart TVs", "4K TVs", "8K TVs", "Curved TVs", "Projectors"]
+      }
+    }
+  },
+  {
+    "id": "smartwatches",
+    "label": "Smartwatches",
+    "icon": "watch",
+    "sections": {
+      "main": {
+        "title": "Smartwatches",
+        "filters": [
+          {
+            "label": "Brands",
+            "items": ["Apple Watch", "Samsung Galaxy Watch", "Garmin", "Fitbit", "Xiaomi", "Huawei", "Amazfit", "Fossil"]
+          },
+          {
+            "label": "Compatibility",
+            "items": ["iOS", "Android", "Universal"]
+          },
+          {
+            "label": "Features",
+            "items": ["GPS", "Heart Rate", "ECG", "Blood Oxygen", "Sleep Tracking", "NFC Payments"]
+          }
+        ]
+      },
+      "accessories": {
+        "title": "Accessories",
+        "items": [
+          {
+            "label": "Smartwatch Accessories",
+            "items": ["Watch Bands", "Chargers", "Screen Protectors", "Cases", "Docking Stations"]
+          }
+        ]
+      },
+      "more": {
+        "title": "More",
+        "label": "Discover More",
+        "items": ["Fitness Bands", "Kids Smartwatches", "Sport Watches", "Luxury Smartwatches"]
+      }
+    }
+  },
+  {
+    "id": "trending",
+    "label": "Trending",
+    "icon": "trending",
+    "sections": {
+      "main": {
+        "title": "Trending Now",
+        "filters": [
+          {
+            "label": "Hot Categories",
+            "items": ["AI Devices", "Foldable Phones", "Gaming Gear", "Wireless Audio", "Smart Home"]
+          },
+          {
+            "label": "Most Viewed",
+            "items": ["iPhone 16 Pro", "Galaxy S25 Ultra", "PS5 Slim", "MacBook Pro M3", "Samsung OLED 65\""]
+          }
+        ]
+      },
+      "accessories": {
+        "title": "Trending Accessories",
+        "items": [
+          {
+            "label": "Viral Products",
+            "items": ["True Wireless Earbuds", "MagSafe Accessories", "Gaming Headsets", "Portable Projectors", "Smart Speakers"]
+          }
+        ]
+      },
+      "more": {
+        "title": "More",
+        "label": "Explore Trends",
+        "items": ["Weekly Top 10", "Editor's Picks", "New Arrivals", "Just Launched", "Community Favorites"]
+      }
+    }
+  },
+  {
+    "id": "on-sale",
+    "label": "On Sale",
+    "icon": "tag",
+    "sections": {
+      "main": {
+        "title": "On Sale",
+        "filters": [
+          {
+            "label": "Discount Range",
+            "items": ["Up to 10%", "10% - 25%", "25% - 50%", "50% - 70%", "Over 70%"]
+          },
+          {
+            "label": "Categories on Sale",
+            "items": ["Smartphones", "Laptops", "Tablets", "Consoles", "Televisions", "Smartwatches"]
+          }
+        ]
+      },
+      "accessories": {
+        "title": "Sale Accessories",
+        "items": [
+          {
+            "label": "Accessories Deals",
+            "items": ["Headphones", "Cases", "Chargers", "Cables", "Memory Cards"]
+          }
+        ]
+      },
+      "more": {
+        "title": "More Deals",
+        "label": "Special Offers",
+        "items": ["Flash Sales", "Bundle Deals", "Clearance", "Refurbished Deals", "Student Discounts"]
+      }
+    }
+  }
+]
