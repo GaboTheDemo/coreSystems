@@ -26,7 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const categoryNavRef = useRef<HTMLElement>(null); // referencia para detectar clics fuera
+  const categoryNavRef = useRef<HTMLElement>(null);
 
   // Cierra el dropdown cuando se hace clic fuera del área de categorías
   useEffect(() => {
@@ -126,7 +126,12 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
               )}
             </button>
 
-            <button className={styles.iconBtn} aria-label="Account">
+            {/* Account → Seller Register */}
+            <button
+              className={styles.iconBtn}
+              aria-label="Seller Account"
+              onClick={() => navigate('/seller/register')}
+            >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
               </svg>
@@ -150,7 +155,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
           </nav>
         </div>
 
-        {/* ── Category Nav (ahora con clic, sin hover) ── */}
+        {/* ── Category Nav ── */}
         <nav className={styles.catNav} ref={categoryNavRef}>
           <button className={styles.allCategoriesBtn}>
             <span className={styles.hamburger}>≡</span>
