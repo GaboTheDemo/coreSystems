@@ -50,7 +50,11 @@ const FEATURE_CARDS = [
   },
 ];
 
-const Home: React.FC = () => {
+interface HomeProps {
+  onCartClick?: () => void;
+}
+
+const Home: React.FC<HomeProps> = ({ onCartClick }) => {
   const saleProducts = getSaleProducts();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [heroBanner] = useState(0);
@@ -65,7 +69,7 @@ const Home: React.FC = () => {
 
   return (
     <div className={styles.page}>
-      <Navbar />
+      <Navbar onCartClick={onCartClick} />
 
       {/* Hero Banner */}
       <section className={styles.hero}>

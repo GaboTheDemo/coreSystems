@@ -2,6 +2,7 @@
 import React from 'react';
 import { type Product } from '../../types';
 import { formatPrice } from '../../services/productService';
+import { useCart } from '../../context/CartContext';
 import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
@@ -10,6 +11,14 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
+  const { addItem } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Evitar que el click del botón dispare onClick del card
+    e.stopPropagation();
+    addItem(product, 1);
+  };
+
   return (
     <div className={styles.card} onClick={() => onClick?.(product)}>
       {product.isOnSale && product.discountPercent && (
@@ -29,6 +38,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       <div className={styles.info}>
         <p className={styles.name}>{product.name}</p>
         <p className={styles.price}>{formatPrice(product.price)}</p>
+        <button
+          type="button"
+          className={styles.addBtn}
+          onClick={handleAddToCart}
+        >
+          Agregar al carrito
+        </button>
       </div>
     </div>
   );

@@ -72,3 +72,22 @@
   color: #1a2d45;
   margin: 0;
 }
+
+.addBtn {
+  margin-top: 10px;
+  width: 100%;
+  background: #5af2c4;
+  color: #0d1b2e;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.addBtn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
