@@ -1,10 +1,12 @@
+// src/components/SearchResultsPage/SearchResultsPage.tsx
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { searchProductsFull } from '../../services/searchService';
+import { useCart } from '../../context/CartContext';
 import type { Product, SearchFilters, SortOption } from '../../types';
 import styles from './SearchResultsPage.module.css';
 
-// ─── ProductCard ─────────────────────────────────────────────────────────────
+// ─── ProductCard ──────────────────────────────────────────────────────────────
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +14,9 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick }) => {
+  const { addItem, openCart } = useCart();
+  const [added, setAdded] = useState(false);
+
   const discount =
     product.originalPrice !== undefined && product.originalPrice > product.price
       ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -19,6 +24,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick }) =>
 
   const rating = product.rating ?? 0;
   const badges = product.badges ?? [];
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addItem(product, 1);
+    openCart();
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1800);
+  };
 
   return (
     <article className={styles.card} onClick={() => onProductClick(product)}>
@@ -60,15 +73,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick }) =>
               </span>
             )}
           </div>
+
+          {/* Botón agregar al carrito con feedback visual */}
           <button
-            className={styles.addToCartBtn}
-            aria-label={`Add ${product.name} to cart`}
-            onClick={e => e.stopPropagation()}
+            className={`${styles.addToCartBtn} ${added ? styles.addToCartBtnAdded : ''}`}
+            aria-label={added ? 'Agregado al carrito' : `Agregar ${product.name} al carrito`}
+            onClick={handleAddToCart}
+            title={added ? '¡Agregado!' : 'Agregar al carrito'}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-            </svg>
+            {added ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+            )}
           </button>
         </div>
 
@@ -101,7 +123,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick }) =>
   );
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const COLOR_MAP: Record<string, string> = {
   Black: '#1a1a1a', White: '#f5f5f5', Silver: '#c0c0c0',
@@ -118,7 +140,7 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'newest',     label: 'Newest'            },
 ];
 
-// ─── Page ────────────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 const SearchResultsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -156,7 +178,6 @@ const SearchResultsPage: React.FC = () => {
     }, { replace: true });
   }, [setSearchParams]);
 
-  // ── Click en tarjeta → navega al detalle ─────────────────────────────────
   const handleProductClick = useCallback((product: Product) => {
     navigate(`/product/${product.slug ?? product.id}`);
   }, [navigate]);

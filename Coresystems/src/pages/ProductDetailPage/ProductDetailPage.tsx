@@ -1,10 +1,12 @@
 // src/pages/ProductDetailPage/ProductDetailPage.tsx
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import productsData from '../../data/longProducts.json'; // ← CAMBIO IMPORTANTE
+import productsData from '../../data/longProducts.json';
 import type { Product } from '../../types';
+import { useCart } from '../../context/CartContext';
 import styles from './ProductDetailPage.module.css';
 
+// ─── helpers ──────────────────────────────────────────────────────────────────
 const ALL_PRODUCTS = productsData as Product[];
 
 function findProduct(slugOrId: string): Product | undefined {
@@ -17,10 +19,8 @@ function formatPrice(n: number) {
   return `$${n.toLocaleString('es-CO')} COP`;
 }
 
-interface SpecSectionProps {
-  title: string;
-  lines: string[];
-}
+// ─── Spec section block ───────────────────────────────────────────────────────
+interface SpecSectionProps { title: string; lines: string[]; }
 const SpecSection: React.FC<SpecSectionProps> = ({ title, lines }) => (
   <div className={styles.specSection}>
     <h3 className={styles.specTitle}>{title}</h3>
@@ -30,10 +30,8 @@ const SpecSection: React.FC<SpecSectionProps> = ({ title, lines }) => (
   </div>
 );
 
-interface RelatedCardProps {
-  product: Product;
-  onClick: () => void;
-}
+// ─── Related card ─────────────────────────────────────────────────────────────
+interface RelatedCardProps { product: Product; onClick: () => void; }
 const RelatedCard: React.FC<RelatedCardProps> = ({ product, onClick }) => (
   <button className={styles.relatedCard} onClick={onClick}>
     <div className={styles.relatedImageWrap}>
@@ -44,14 +42,52 @@ const RelatedCard: React.FC<RelatedCardProps> = ({ product, onClick }) => (
   </button>
 );
 
+// ─── AddToCart button with feedback ──────────────────────────────────────────
+interface AddToCartBtnProps { onAdd: () => void; }
+const AddToCartBtn: React.FC<AddToCartBtnProps> = ({ onAdd }) => {
+  const [added, setAdded] = useState(false);
+
+  const handleClick = () => {
+    onAdd();
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1800);
+  };
+
+  return (
+    <button
+      className={`${styles.addToCartBtn} ${added ? styles.addToCartBtnAdded : ''}`}
+      onClick={handleClick}
+    >
+      {added ? (
+        <>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+          ¡Agregado!
+        </>
+      ) : (
+        <>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          Agregar al carrito
+        </>
+      )}
+    </button>
+  );
+};
+
+// ─── Página principal ─────────────────────────────────────────────────────────
 const ProductDetailPage: React.FC = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
   const navigate = useNavigate();
+  const { addItem, openCart } = useCart();
 
   const product = useMemo(() => findProduct(slugOrId ?? ''), [slugOrId]);
 
-  const [quantity, setQuantity] = useState(1);
-  const [activeThumb, setActiveThumb] = useState(0);
+  const [quantity, setQuantity]         = useState(1);
+  const [activeThumb, setActiveThumb]   = useState(0);
   const [specsExpanded, setSpecsExpanded] = useState(false);
 
   const related = useMemo(() => {
@@ -74,77 +110,73 @@ const ProductDetailPage: React.FC = () => {
   }
 
   const thumbs = [product.image, product.image, product.image];
+
   const discount = product.originalPrice && product.originalPrice > product.price
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
-  // ─── Construcción DINÁMICA de especificaciones usando todas las claves de specs ───
-  const specSections: SpecSectionProps[] = [];
   const specs = product.specs || {};
+  const specSections: SpecSectionProps[] = [];
 
-  // Mapeo de claves a títulos en español
-  const titleMap: Record<string, string> = {
-    screenSize: 'Pantalla',
-    screenType: 'Tipo de pantalla',
-    resolution: 'Resolución',
-    refreshRate: 'Frecuencia',
-    panel: 'Panel',
-    hdr: 'HDR',
-    camera: 'Cámaras',
-    frontCamera: 'Cámara frontal',
-    videoRecording: 'Grabación de video',
-    processor: 'Procesador',
-    processorDetails: 'Detalles del procesador',
-    ram: 'Memoria RAM',
-    storage: 'Almacenamiento',
-    gpu: 'GPU',
-    battery: 'Batería',
-    charging: 'Carga',
-    chargingSpeed: 'Velocidad de carga',
-    connectivity: 'Conectividad',
-    gps: 'GPS',
-    simCard: 'SIM',
-    ports: 'Puertos',
-    audioOutput: 'Audio',
-    vrSupport: 'Soporte VR',
-    os: 'Sistema operativo',
-    smartOS: 'Smart OS',
-    sensors: 'Sensores',
-    emergencySOS: 'Emergencia SOS',
-    crashDetection: 'Detección de accidentes',
-    altimeter: 'Altímetro',
-    compass: 'Brújula',
-    spen: 'S Pen',
-    dimensions: 'Dimensiones',
-    weight: 'Peso',
-    waterResistance: 'Resistencia al agua',
-    body: 'Material',
-    wirelessCharging: 'Carga inalámbrica',
-    nfc: 'NFC',
-    keyboard: 'Teclado',
-    webcam: 'Webcam',
-    optical: 'Lector óptico',
-    coolingSystem: 'Sistema de refrigeración',
-    displayTech: 'Tecnología de pantalla',
-  };
-
-  // Agrupar especificaciones por clave (cada clave se convierte en una sección)
-  Object.entries(specs).forEach(([key, value]) => {
-    if (value && typeof value === 'string') {
-      const title = titleMap[key] || key.charAt(0).toUpperCase() + key.slice(1);
-      specSections.push({ title, lines: [value] });
-    }
-  });
-
-  // Si no hay especificaciones, mostrar un mensaje (opcional)
-  if (specSections.length === 0) {
-    specSections.push({ title: 'Especificaciones', lines: ['No hay información adicional'] });
+  if (specs.screenSize) {
+    specSections.push({
+      title: 'Pantalla',
+      lines: [
+        `Tamaño: ${specs.screenSize}`,
+        specs.screenType || 'Pantalla Super Retina XDR OLED',
+        specs.refreshRate || 'Tecnología ProMotion hasta 120 Hz',
+      ],
+    });
+  }
+  if (specs.processor) {
+    specSections.push({
+      title: 'Procesador',
+      lines: [specs.processor, specs.processorDetails || 'Alto rendimiento para juegos y multitarea'].filter(Boolean),
+    });
+  }
+  if (specs.ram) {
+    specSections.push({ title: 'Memoria RAM', lines: [`${specs.ram} de RAM`] });
+  }
+  if (specs.storage) {
+    specSections.push({ title: 'Capacidad de almacenamiento', lines: [specs.storage] });
+  }
+  if (specs.camera) {
+    specSections.push({
+      title: 'Cámaras',
+      lines: [
+        `Cámara principal ${specs.camera}`,
+        specs.videoRecording || 'Grabación de video 4K',
+        specs.frontCamera || 'Cámara frontal 12 MP',
+      ],
+    });
+  }
+  if (specs.battery) {
+    specSections.push({
+      title: 'Batería',
+      lines: [specs.battery, specs.charging || 'Compatible con carga rápida e inalámbrica'].filter(Boolean),
+    });
+  }
+  if (specs.connectivity) {
+    specSections.push({ title: 'Conectividad', lines: [specs.connectivity] });
   }
 
   const visibleSpecs = specsExpanded ? specSections : specSections.slice(0, 2);
 
+  // ── Handlers carrito ──────────────────────────────────────────────────────
+  const handleAddToCart = () => {
+    addItem(product, quantity);
+    openCart();
+  };
+
+  const handleBuyNow = () => {
+    addItem(product, quantity);
+    openCart();
+    // O navega directo a checkout: navigate('/checkout');
+  };
+
   return (
     <div className={styles.page}>
+      {/* Breadcrumb */}
       <nav className={styles.breadcrumb}>
         <button onClick={() => navigate('/')}>Home</button>
         <span>›</span>
@@ -155,6 +187,7 @@ const ProductDetailPage: React.FC = () => {
         <span>{product.name}</span>
       </nav>
 
+      {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.thumbCol}>
           {thumbs.map((src, i) => (
@@ -207,15 +240,16 @@ const ProductDetailPage: React.FC = () => {
             <button className={styles.qtyBtn} onClick={() => setQuantity(q => q + 1)}>+</button>
           </div>
 
-          <button className={styles.addToCartBtn}>Agregar al carrito</button>
-          <button className={styles.buyNowBtn}>Comprar</button>
+          {/* Botones de acción con lógica de carrito */}
+          <AddToCartBtn onAdd={handleAddToCart} />
+          <button className={styles.buyNowBtn} onClick={handleBuyNow}>Comprar</button>
 
           <ul className={styles.quickSpecs}>
-            {specs.storage && <li>· Capacidad de almacenamiento: {specs.storage}</li>}
+            {specs.storage    && <li>· Capacidad de almacenamiento: {specs.storage}</li>}
             {specs.screenSize && <li>· Tamaño de la pantalla: {specs.screenSize}</li>}
-            {specs.camera && <li>· Cámara posterior: {specs.camera}</li>}
-            {specs.ram && <li>· Memoria RAM: {specs.ram}</li>}
-            {product.color && <li>· Color: {product.color}</li>}
+            {specs.camera     && <li>· Cámara posterior: {specs.camera}</li>}
+            {specs.ram        && <li>· Memoria RAM: {specs.ram}</li>}
+            {product.color    && <li>· Color: {product.color}</li>}
           </ul>
 
           {product.stock !== undefined && (
