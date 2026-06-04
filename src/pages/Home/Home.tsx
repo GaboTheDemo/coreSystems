@@ -2,9 +2,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import { getSaleProducts } from '../../services/productService';
-import ChatWidget from '../../components/ChatWidget/ChatWidget';
 import styles from './Home.module.css';
 import type { Product } from '../../types';
+
+/*
+ * ChatWidget NO va aquí. El widget del buyer necesita storeId + storeName
+ * y se monta en ProductDetailPage o en la página de la tienda donde el
+ * buyer tiene contexto de a qué tienda le escribe.
+ *
+ * El SellerChatWidget se monta en AppLayout (App.tsx) para sellers.
+ */
 
 const FEATURE_CARDS = [
   {
@@ -52,8 +59,8 @@ const FEATURE_CARDS = [
 
 const Home: React.FC = () => {
   const [saleProducts, setSaleProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading]           = useState(true);
+  const scrollRef  = useRef<HTMLDivElement>(null);
   const [heroBanner] = useState(0);
 
   useEffect(() => {
@@ -111,8 +118,6 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
-
-      <ChatWidget />
     </div>
   );
 };
