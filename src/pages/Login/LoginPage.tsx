@@ -2,22 +2,18 @@
 import React, { useState } from "react";
 import {
   sendMagicLink,
-  verifyOtp,
   loginWithProvider,
   validateIdentifier,
 } from "../../services/authService";
 import "./LoginPage.css";
 
-// Sin props — el redirect lo maneja App.tsx via onAuthStateChange
 const LoginPage: React.FC = () => {
-  const [step, setStep]       = useState<"email" | "otp">("email");
   const [email, setEmail]     = useState("");
-  const [otp, setOtp]         = useState("");
   const [error, setError]     = useState<string | null>(null);
-  const [loading, setLoading] = useState<"email" | "otp" | "google" | "facebook" | "apple" | null>(null);
+  const [loading, setLoading] = useState<"email" | "google" | "facebook" | "apple" | null>(null);
+  const [sent, setSent]       = useState(false);
 
-  // ── Paso 1: enviar OTP ────────────────────────────────────────────────────
-  const handleSendOtp = async () => {
+  const handleSendLink = async () => {
     const validationError = validateIdentifier(email);
     if (validationError) { setError(validationError); return; }
 
@@ -27,41 +23,21 @@ const LoginPage: React.FC = () => {
     setLoading(null);
 
     if (!result.success) {
-      setError(result.error ?? "No se pudo enviar el código.");
+      setError(result.error ?? "No se pudo enviar el enlace.");
     } else {
-      setStep("otp");
+      setSent(true);
     }
   };
 
-  // ── Paso 2: verificar OTP ─────────────────────────────────────────────────
-  // NO llama navigate() ni onSuccess() — App.tsx escucha SIGNED_IN
-  // y actualiza user, lo que hace que <Navigate to="/" /> se renderice solo
-  const handleVerifyOtp = async () => {
-    if (otp.trim().length < 6) { setError("Ingresa el código de 6 dígitos."); return; }
-
-    setError(null);
-    setLoading("otp");
-    const result = await verifyOtp(email, otp.trim());
-    setLoading(null);
-
-    if (!result.success) {
-      setError(result.error ?? "Código incorrecto o expirado.");
-    }
-    // Si es exitoso: Supabase dispara SIGNED_IN → onAuthStateChange en App.tsx
-    // → setUser(u) → user deja de ser null → LoginPage se desmonta → va a AppLayout
-  };
-
-  // ── OAuth ─────────────────────────────────────────────────────────────────
   const handleProviderLogin = async (provider: "google" | "facebook" | "apple") => {
     setLoading(provider);
     const result = await loginWithProvider(provider as "google" | "facebook");
     setLoading(null);
     if (!result.success) setError(result.error ?? "Error al iniciar sesión.");
-    // Supabase redirige a /auth/callback automáticamente
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") step === "email" ? handleSendOtp() : handleVerifyOtp();
+    if (e.key === "Enter") handleSendLink();
   };
 
   return (
@@ -72,16 +48,35 @@ const LoginPage: React.FC = () => {
             <div className="login-avatar-icon">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="8" r="4.5" stroke="#1a1a1a" strokeWidth="1.8" />
-                <path d="M3.5 20.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5"
-                  stroke="#1a1a1a" strokeWidth="1.8" strokeLinecap="round" />
+                <path
+                  d="M3.5 20.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5"
+                  stroke="#1a1a1a" strokeWidth="1.8" strokeLinecap="round"
+                />
               </svg>
             </div>
             <h1 className="login-title">Sign in / Register</h1>
           </div>
 
-          {/* ── PASO 1: email ── */}
-          {step === "email" && (
+          {/* ── Confirmación: enlace enviado ── */}
+          {sent ? (
+            <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+              <p style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📬</p>
+              <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>Check your email</p>
+              <p style={{ color: '#666', fontSize: '0.875rem', lineHeight: 1.6 }}>
+                Enviamos un enlace de acceso a <strong>{email}</strong>.<br />
+                Haz click en el enlace para entrar.
+              </p>
+              <button
+                className="trouble-link"
+                style={{ marginTop: '1.25rem' }}
+                onClick={() => { setSent(false); setEmail(""); setError(null); }}
+              >
+                ← Usar otro email
+              </button>
+            </div>
+          ) : (
             <>
+              {/* ── Formulario email ── */}
               <div className="login-field">
                 <label className="login-label" htmlFor="email">Email</label>
                 <input
@@ -99,73 +94,52 @@ const LoginPage: React.FC = () => {
 
               <button
                 className="btn-continue"
-                onClick={handleSendOtp}
+                onClick={handleSendLink}
                 disabled={loading !== null}
               >
                 {loading === "email" ? <span className="btn-spinner" /> : "Continue"}
               </button>
 
-              <div className="login-divider"><span className="divider-text">Or</span></div>
+              <div className="login-divider">
+                <span className="divider-text">Or</span>
+              </div>
 
               <div className="sso-group">
-                <button className="sso-btn" onClick={() => handleProviderLogin("google")} disabled={loading !== null}>
-                  {loading === "google" ? <span className="btn-spinner sso-spinner" /> : <GoogleIcon />}
+                <button
+                  className="sso-btn"
+                  onClick={() => handleProviderLogin("google")}
+                  disabled={loading !== null}
+                >
+                  {loading === "google"
+                    ? <span className="btn-spinner sso-spinner" />
+                    : <GoogleIcon />}
                   <span>Continue with Google</span>
                 </button>
-                <button className="sso-btn" onClick={() => handleProviderLogin("facebook")} disabled={loading !== null}>
-                  {loading === "facebook" ? <span className="btn-spinner sso-spinner" /> : <FacebookIcon />}
+
+                <button
+                  className="sso-btn"
+                  onClick={() => handleProviderLogin("facebook")}
+                  disabled={loading !== null}
+                >
+                  {loading === "facebook"
+                    ? <span className="btn-spinner sso-spinner" />
+                    : <FacebookIcon />}
                   <span>Continue with Facebook</span>
                 </button>
-                <button className="sso-btn" onClick={() => handleProviderLogin("apple")} disabled={loading !== null}>
-                  {loading === "apple" ? <span className="btn-spinner sso-spinner" /> : <AppleIcon />}
+
+                <button
+                  className="sso-btn"
+                  onClick={() => handleProviderLogin("apple")}
+                  disabled={loading !== null}
+                >
+                  {loading === "apple"
+                    ? <span className="btn-spinner sso-spinner" />
+                    : <AppleIcon />}
                   <span>Continue with Apple</span>
                 </button>
               </div>
 
               <button className="trouble-link">Trouble signing in?</button>
-            </>
-          )}
-
-          {/* ── PASO 2: OTP ── */}
-          {step === "otp" && (
-            <>
-              <p className="login-otp-hint">
-                Enviamos un código de 6 dígitos a <strong>{email}</strong>.
-                Revisa tu bandeja de entrada.
-              </p>
-
-              <div className="login-field">
-                <label className="login-label" htmlFor="otp">Verification code</label>
-                <input
-                  id="otp"
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
-                  className={`login-input login-input--otp ${error ? "login-input--error" : ""}`}
-                  value={otp}
-                  onChange={e => { setOtp(e.target.value.replace(/\D/g, "")); setError(null); }}
-                  onKeyDown={handleKeyDown}
-                  placeholder="000000"
-                  autoComplete="one-time-code"
-                  autoFocus
-                />
-                {error && <p className="login-error" role="alert">{error}</p>}
-              </div>
-
-              <button
-                className="btn-continue"
-                onClick={handleVerifyOtp}
-                disabled={loading !== null}
-              >
-                {loading === "otp" ? <span className="btn-spinner" /> : "Verify"}
-              </button>
-
-              <button
-                className="trouble-link"
-                onClick={() => { setStep("email"); setOtp(""); setError(null); }}
-              >
-                ← Use a different email
-              </button>
             </>
           )}
         </div>

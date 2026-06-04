@@ -11,13 +11,11 @@ const SellerRegister: React.FC = () => {
   const [formData, setFormData] = useState({
     username:  '',
     storeName: '',
-    password:  '',
   });
-  const [errors,  setErrors]  = useState<Partial<typeof formData>>({});
-  const [loading, setLoading] = useState(false);
+  const [errors,   setErrors]   = useState<Partial<typeof formData>>({});
+  const [loading,  setLoading]  = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  // Verificar que el usuario está logueado y es buyer
   useEffect(() => {
     getCurrentUser().then(user => {
       if (!user) { navigate('/login'); return; }
@@ -30,7 +28,6 @@ const SellerRegister: React.FC = () => {
     const newErrors: Partial<typeof formData> = {};
     if (!formData.username.trim())  newErrors.username  = 'Username is required';
     if (!formData.storeName.trim()) newErrors.storeName = 'Store name is required';
-    if (formData.password.length < 6) newErrors.password = 'Min. 6 characters';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -45,7 +42,7 @@ const SellerRegister: React.FC = () => {
     e.preventDefault();
     if (!validate() || !userId) return;
     setLoading(true);
-    const result = await upgradeToSeller(userId, formData.username, formData.storeName, formData.password);
+    const result = await upgradeToSeller(userId, formData.username, formData.storeName);
     setLoading(false);
     if (!result.success) {
       setApiError(result.error ?? 'Error creating seller account.');
@@ -88,16 +85,6 @@ const SellerRegister: React.FC = () => {
               />
               {errors.storeName && <span className={styles.error}>{errors.storeName}</span>}
             </div>
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label}>Password (confirm your identity)</label>
-            <input
-              className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
-              type="password" name="password" placeholder="••••••••"
-              value={formData.password} onChange={handleChange} autoComplete="current-password"
-            />
-            {errors.password && <span className={styles.error}>{errors.password}</span>}
           </div>
 
           {apiError && <p className={styles.error} style={{ textAlign: 'center' }}>{apiError}</p>}

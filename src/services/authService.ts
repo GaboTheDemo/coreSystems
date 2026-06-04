@@ -2,7 +2,6 @@
 import { supabase } from '../lib/supabaseClient';
 import type { User } from '../types';
 
-// ─── Mapea el perfil de Supabase al tipo User de la app ──────────────────────
 const mapProfile = (profile: Record<string, unknown>): User => ({
   id:        profile.id as string,
   name:      (profile.full_name as string) ?? '',
@@ -12,23 +11,20 @@ const mapProfile = (profile: Record<string, unknown>): User => ({
   createdAt: profile.created_at as string,
 });
 
-// ─── Login con magic link (OTP por email) ────────────────────────────────────
-// shouldCreateUser: true → si no existe lo crea, si existe solo hace login
-// Supabase maneja esto solo: no crea duplicados
 export async function sendMagicLink(
   email: string
 ): Promise<{ success: boolean; error?: string }> {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      shouldCreateUser: true, // si ya existe → login; si no → registro
+      shouldCreateUser: true,
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
     },
   });
   if (error) return { success: false, error: error.message };
   return { success: true };
 }
 
-// ─── Verificar el OTP que llegó al email ─────────────────────────────────────
 export async function verifyOtp(
   email: string,
   token: string
@@ -50,7 +46,6 @@ export async function verifyOtp(
   return { success: true, user: mapProfile(profile) };
 }
 
-// ─── OAuth (Google / Facebook) ───────────────────────────────────────────────
 export async function loginWithProvider(
   provider: 'google' | 'facebook'
 ): Promise<{ success: boolean; error?: string }> {
@@ -64,16 +59,10 @@ export async function loginWithProvider(
   return { success: true };
 }
 
-// ─── Callback OAuth — llamar desde AuthCallbackPage ──────────────────────────
-// Supabase pone el token en la URL (#access_token=... o ?code=...)
-// exchangeCodeForSession lo procesa y establece la sesión automáticamente
 export async function handleAuthCallback(): Promise<{ success: boolean; user?: User; error?: string }> {
-  // Para el flujo PKCE (por defecto en Supabase v2), exchangeCodeForSession
-  // lee el `code` de la URL actual y lo canjea por una sesión
   const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
 
   if (error || !data.session) {
-    // Si ya había sesión activa (e.g. recarga), intentar obtenerla directamente
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return { success: false, error: error?.message ?? 'Sin sesión' };
 
@@ -85,7 +74,6 @@ export async function handleAuthCallback(): Promise<{ success: boolean; user?: U
   return user ? { success: true, user } : { success: false, error: 'Perfil no encontrado' };
 }
 
-// ─── Sesión activa ────────────────────────────────────────────────────────────
 export async function getCurrentUser(): Promise<User | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -99,26 +87,17 @@ export async function getCurrentUser(): Promise<User | null> {
   return profile ? mapProfile(profile) : null;
 }
 
-// ─── Logout ───────────────────────────────────────────────────────────────────
 export async function logout(): Promise<void> {
   await supabase.auth.signOut();
 }
 
-// ─── Upgrade buyer → seller ───────────────────────────────────────────────────
 export async function upgradeToSeller(
   userId: string,
   username: string,
   storeName: string,
-  password: string
 ): Promise<{ success: boolean; error?: string }> {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user?.email) return { success: false, error: 'No autenticado' };
-
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: user.email,
-    password,
-  });
-  if (signInError) return { success: false, error: 'Contraseña incorrecta' };
+  if (authError || !user) return { success: false, error: 'No autenticado' };
 
   const { data, error: rpcError } = await supabase.rpc('upgrade_to_seller', {
     p_user_id:    userId,
@@ -131,7 +110,6 @@ export async function upgradeToSeller(
   return { success: true };
 }
 
-// ─── Validación de formato ────────────────────────────────────────────────────
 export function validateIdentifier(value: string): string | null {
   if (!value.trim()) return 'Este campo es requerido.';
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
