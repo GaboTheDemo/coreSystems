@@ -8,7 +8,6 @@ const SellerChatWidget: React.FC = () => {
   const {
     conversations,
     conversationsLoading,
-    activeConversationId,
     messages,
     messagesLoading,
     totalUnread,
@@ -25,12 +24,10 @@ const SellerChatWidget: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll cuando llegan mensajes nuevos
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Focus al input cuando se entra a la vista de chat
   useEffect(() => {
     if (isOpen && view === 'chat') {
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -74,8 +71,8 @@ const SellerChatWidget: React.FC = () => {
     if (!iso) return '';
     const d    = new Date(iso);
     const diff = Date.now() - d.getTime();
-    if (diff < 60_000)   return 'just now';
-    if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
+    if (diff < 60_000)    return 'just now';
+    if (diff < 3_600_000)  return `${Math.floor(diff / 60_000)}m ago`;
     if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
     return d.toLocaleDateString();
   };
@@ -87,7 +84,7 @@ const SellerChatWidget: React.FC = () => {
       {isOpen && (
         <div className={styles.chatWindow}>
 
-          {/* ── LIST VIEW ──────────────────────────────────────────────── */}
+          {/* ── LIST VIEW ── */}
           {view === 'list' && (
             <>
               <div className={styles.chatHeader}>
@@ -118,7 +115,11 @@ const SellerChatWidget: React.FC = () => {
                     </div>
                     <div className={styles.convInfo}>
                       <span className={styles.convName}>{conv.other_name}</span>
-                      <span className={styles.convTime}>{formatRelative(conv.last_message_at)}</span>
+                      <span className={styles.convTime}>
+                        {conv.other_email
+                          ? `${conv.other_email} · ${formatRelative(conv.last_message_at)}`
+                          : formatRelative(conv.last_message_at)}
+                      </span>
                     </div>
                     {conv.seller_unread > 0 && (
                       <span className={styles.convBadge}>{conv.seller_unread}</span>
@@ -129,7 +130,7 @@ const SellerChatWidget: React.FC = () => {
             </>
           )}
 
-          {/* ── CHAT VIEW ──────────────────────────────────────────────── */}
+          {/* ── CHAT VIEW ── */}
           {view === 'chat' && (
             <>
               <div className={styles.chatHeader}>
@@ -147,7 +148,9 @@ const SellerChatWidget: React.FC = () => {
                       {activeConv?.other_name ?? 'Customer'}
                     </span>
                     <span className={styles.headerStatus}>
-                      <span className={styles.onlineDot} /> Active now
+                      {activeConv?.other_email
+                        ? activeConv.other_email
+                        : <><span className={styles.onlineDot} /> Active now</>}
                     </span>
                   </div>
                 </div>
@@ -187,7 +190,7 @@ const SellerChatWidget: React.FC = () => {
                         </div>
                       </div>
                       {isMe && (
-                        <div className={styles.msgAvatar}>{/* seller avatar vacío o inicial */}S</div>
+                        <div className={styles.msgAvatar}>S</div>
                       )}
                     </div>
                   );
@@ -226,7 +229,7 @@ const SellerChatWidget: React.FC = () => {
         </div>
       )}
 
-      {/* ── FAB ──────────────────────────────────────────────────────────── */}
+      {/* ── FAB ── */}
       <button
         className={`${styles.fab} ${isOpen ? styles.fabOpen : ''}`}
         onClick={() => setIsOpen(o => !o)}

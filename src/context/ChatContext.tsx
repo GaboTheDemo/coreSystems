@@ -1,3 +1,4 @@
+// src/context/ChatContext.tsx
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
@@ -17,13 +18,14 @@ export interface Conversation {
   buyer_id: string;
   store_name: string;
   other_name: string;
+  other_email: string;
   last_message_at: string | null;
   buyer_unread: number;
   seller_unread: number;
 }
 
 export interface Store {
-  id: string;       // stores.id
+  id: string;
   store_name: string;
 }
 
@@ -35,7 +37,6 @@ interface ChatContextValue {
   messagesLoading: boolean;
   totalUnread: number;
   currentUserRole: SenderRole | null;
-  // Lista de tiendas disponibles (solo para buyers)
   availableStores: Store[];
   storesLoading: boolean;
   openConversation: (conversationId: string) => Promise<void>;
@@ -138,6 +139,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
             buyer_id:        c.buyer_id,
             store_name:      c.stores?.store_name ?? 'Store',
             other_name:      c.stores?.store_name ?? 'Store',
+            other_email:     '',
             last_message_at: c.last_message_at,
             buyer_unread:    c.buyer_unread,
             seller_unread:   c.seller_unread,
@@ -161,7 +163,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
             last_message_at,
             buyer_unread,
             seller_unread,
-            profiles!conversations_buyer_id_fkey (full_name)
+            profiles!conversations_buyer_id_fkey (full_name, email)
           `)
           .eq('seller_id', store.id)
           .order('last_message_at', { ascending: false, nullsFirst: false });
@@ -173,6 +175,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
             buyer_id:        c.buyer_id,
             store_name:      '',
             other_name:      c.profiles?.full_name ?? 'Customer',
+            other_email:     c.profiles?.email ?? '',
             last_message_at: c.last_message_at,
             buyer_unread:    c.buyer_unread,
             seller_unread:   c.seller_unread,
@@ -265,7 +268,12 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const updated = payload.new as any;
           setConversations(prev => prev.map(c =>
             c.id === conversationId
-              ? { ...c, buyer_unread: updated.buyer_unread, seller_unread: updated.seller_unread, last_message_at: updated.last_message_at }
+              ? {
+                  ...c,
+                  buyer_unread:    updated.buyer_unread,
+                  seller_unread:   updated.seller_unread,
+                  last_message_at: updated.last_message_at,
+                }
               : c
           ));
         }
@@ -318,9 +326,13 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    setMessages(prev => prev.map(m => m.id === tempId ? { ...m, id: msgId as string } : m));
+    setMessages(prev => prev.map(m =>
+      m.id === tempId ? { ...m, id: msgId as string } : m
+    ));
     setConversations(prev => prev.map(c =>
-      c.id === activeConversationId ? { ...c, last_message_at: new Date().toISOString() } : c
+      c.id === activeConversationId
+        ? { ...c, last_message_at: new Date().toISOString() }
+        : c
     ));
   }, [activeConversationId, currentUserId, currentUserRole, currentUserName]);
 

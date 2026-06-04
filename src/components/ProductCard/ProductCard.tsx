@@ -21,8 +21,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           alt={product.name}
           className={styles.image}
           onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              'https://via.placeholder.com/220x180?text=No+Image';
+            const target = e.target as HTMLImageElement;
+            target.onerror = null;
+            target.src = `https://placehold.co/220x180/f0f0f0/999999?text=${encodeURIComponent(product.name)}`;
           }}
         />
       </div>

@@ -1,6 +1,6 @@
 // src/services/searchService.ts
 import { supabase } from '../lib/supabaseClient';
-import type { Product, SearchFilters, SortOption, SearchResult, PriceRange } from '../types';
+import type { Product, ProductSpec, SearchFilters, SortOption, SearchResult, PriceRange } from '../types';
 
 export interface SearchProduct {
   id: string | number;
@@ -13,6 +13,30 @@ export interface SearchProduct {
   badge: string | null;
   isOnSale: boolean;
 }
+
+// ─── Mapper DB row → Product ──────────────────────────────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapRowToProduct = (p: any): Product => ({
+  id:            p.id,
+  name:          p.name,
+  slug:          p.slug,
+  brand:         p.brand_name,
+  price:         p.price,
+  originalPrice: p.original_price,
+  image:         p.image_url,
+  category:      p.category_id,
+  subcategory:   p.subcategory,
+  rating:        p.rating,
+  reviewCount:   p.review_count,
+  stock:         p.stock,
+  isTrending:    p.is_trending,
+  isOnSale:      p.is_on_sale,
+  discount:      p.discount,
+  color:         p.color,
+  specs:         (p.specs ?? {}) as ProductSpec,
+  badges:        p.badges ?? [],
+  description:   p.description,
+});
 
 export const getPopularSearches = async (): Promise<string[]> => {
   const { data, error } = await supabase
@@ -30,15 +54,15 @@ export const getRecommendedProducts = async (): Promise<SearchProduct[]> => {
     .order('sort_order');
   if (error) throw error;
   return (data ?? []).map(r => ({
-    id: r.id,
-    name: r.name,
-    price: r.price,
-    image: r.image_url,
-    category: r.category_id,
-    rating: r.rating,
+    id:          r.id,
+    name:        r.name,
+    price:       r.price,
+    image:       r.image_url,
+    category:    r.category_id,
+    rating:      r.rating,
     reviewCount: r.review_count,
-    badge: r.badge ?? null,
-    isOnSale: r.is_on_sale,
+    badge:       r.badge ?? null,
+    isOnSale:    r.is_on_sale,
   }));
 };
 
@@ -48,22 +72,20 @@ export const searchProducts = async (query: string): Promise<SearchProduct[]> =>
   const { data, error } = await supabase
     .from('products_full')
     .select('*')
-    .or(
-      `name.ilike.%${query}%,brand_name.ilike.%${query}%,category_id.ilike.%${query}%`
-    )
+    .or(`name.ilike.%${query}%,brand_name.ilike.%${query}%,category_id.ilike.%${query}%`)
     .limit(5);
   if (error) throw error;
 
   return (data ?? []).map(p => ({
-    id: p.id,
-    name: p.name,
-    price: p.price,
-    image: p.image_url,
-    category: p.category_id,
-    rating: p.rating ?? 4.5,
+    id:          p.id,
+    name:        p.name,
+    price:       p.price,
+    image:       p.image_url,
+    category:    p.category_id,
+    rating:      p.rating ?? 4.5,
     reviewCount: p.review_count ?? 0,
-    badge: p.badges?.[0] ?? null,
-    isOnSale: p.is_on_sale ?? false,
+    badge:       p.badges?.[0] ?? null,
+    isOnSale:    p.is_on_sale ?? false,
   }));
 };
 
@@ -71,25 +93,24 @@ export const formatPrice = (price: number): string =>
   `$${price.toLocaleString('es-CO')}`;
 
 // ─── Búsqueda completa para SearchResultsPage ────────────────────────────────
-
 export async function searchProductsFull(filters: SearchFilters): Promise<SearchResult> {
-  let query = supabase.from('products_full').select('*');
+  let q = supabase.from('products_full').select('*');
 
   if (filters.query?.trim()) {
-    query = query.or(
+    q = q.or(
       `name.ilike.%${filters.query}%,brand_name.ilike.%${filters.query}%,description.ilike.%${filters.query}%`
     );
   }
-  if (filters.category) query = query.eq('category_id', filters.category);
-  if (filters.brand)    query = query.ilike('brand_name', filters.brand);
-  if (filters.colors?.length) query = query.in('color', filters.colors);
-  if (filters.minPrice !== undefined) query = query.gte('price', filters.minPrice);
-  if (filters.maxPrice !== undefined) query = query.lte('price', filters.maxPrice);
+  if (filters.category)       q = q.eq('category_id', filters.category);
+  if (filters.brand)          q = q.ilike('brand_name', filters.brand);
+  if (filters.colors?.length) q = q.in('color', filters.colors);
+  if (filters.minPrice !== undefined) q = q.gte('price', filters.minPrice);
+  if (filters.maxPrice !== undefined) q = q.lte('price', filters.maxPrice);
 
-  const { data, error } = await query;
+  const { data, error } = await q;
   if (error) throw error;
 
-  const products = (data ?? []) as Product[];
+  const products = (data ?? []).map(mapRowToProduct);
   const sorted   = sortByOption(products, filters.sortBy ?? 'relevance');
   const facets   = buildFacets(products);
 
