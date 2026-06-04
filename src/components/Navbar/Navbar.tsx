@@ -8,6 +8,7 @@ import CartDrawer from '../CartDrawer/CartDrawer';
 import FavoritesDrawer from '../FavoritesDrawer/FavoritesDrawer';
 import { useCart } from '../../context/CartContext';
 import { useFavorites } from '../../context/FavoritesContext';
+import type { CategoryDropdownData } from '../../types';
 import type { SearchProduct } from '../../services/searchService';
 import styles from './Navbar.module.css';
 
@@ -17,10 +18,10 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
   const navigate = useNavigate();
-  const categories = getAllCategories();
   const { totalItems, toggleCart } = useCart();
   const { totalFavorites, toggleDrawer: toggleFavorites } = useFavorites();
 
+  const [categories, setCategories] = useState<CategoryDropdownData[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -28,7 +29,12 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const categoryNavRef = useRef<HTMLElement>(null);
 
-  // Cierra el dropdown cuando se hace clic fuera del área de categorías
+  // Carga las categorías al montar
+  useEffect(() => {
+    getAllCategories().then(setCategories).catch(console.error);
+  }, []);
+
+  // Cierra el dropdown cuando se hace clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (categoryNavRef.current && !categoryNavRef.current.contains(event.target as Node)) {
@@ -41,7 +47,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
 
   const activeData = categories.find(c => c.id === activeCategory);
 
-  // ── Search ─────────────────────────────────────────────────────────────────
   const openSearch = () => setSearchOpen(true);
   const closeSearch = () => setSearchOpen(false);
 
@@ -68,12 +73,10 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
     navigate(`/search?q=${encodeURIComponent(product.name)}`);
   };
 
-  // Maneja el clic en una categoría: abre/cierra el dropdown
   const handleCategoryClick = (categoryId: string) => {
     setActiveCategory(prev => (prev === categoryId ? null : categoryId));
   };
 
-  // Cierra el dropdown cuando se elige una opción dentro del menú
   const handleDropdownItemClick = () => {
     setActiveCategory(null);
   };
@@ -81,7 +84,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
   return (
     <>
       <header className={styles.header}>
-        {/* ── Top Bar ── */}
         <div className={styles.topBar}>
           <div className={styles.logo} onClick={onLogoClick}>
             <span className={styles.logoDot1}>●</span>
@@ -105,13 +107,12 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
             />
             <button className={styles.searchBtn} type="submit">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
             </button>
           </form>
 
           <nav className={styles.topActions}>
-            {/* Wishlist */}
             <button
               className={styles.iconBtn}
               aria-label={`Favoritos (${totalFavorites})`}
@@ -126,7 +127,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
               )}
             </button>
 
-            {/* Account → Seller Register */}
             <button
               className={styles.iconBtn}
               aria-label="Seller Account"
@@ -137,7 +137,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
               </svg>
             </button>
 
-            {/* Carrito */}
             <button
               className={styles.iconBtn}
               aria-label={`Carrito (${totalItems} productos)`}
@@ -155,7 +154,6 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
           </nav>
         </div>
 
-        {/* ── Category Nav ── */}
         <nav className={styles.catNav} ref={categoryNavRef}>
           <button className={styles.allCategoriesBtn}>
             <span className={styles.hamburger}>≡</span>
@@ -167,8 +165,8 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
               <button
                 className={[
                   styles.catItem,
-                  cat.id === 'trending' ? styles.trending : '',
-                  cat.id === 'on-sale' ? styles.onSale : '',
+                  cat.id === 'trending'  ? styles.trending : '',
+                  cat.id === 'on-sale'   ? styles.onSale   : '',
                   activeCategory === cat.id ? styles.catItemActive : '',
                 ].join(' ')}
                 onClick={() => handleCategoryClick(cat.id)}

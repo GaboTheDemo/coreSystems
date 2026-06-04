@@ -1,5 +1,5 @@
 // src/pages/Home/Home.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import { getSaleProducts } from '../../services/productService';
 import ChatWidget from '../../components/ChatWidget/ChatWidget';
@@ -51,40 +51,37 @@ const FEATURE_CARDS = [
 ];
 
 const Home: React.FC = () => {
-  const saleProducts = getSaleProducts();
+  const [saleProducts, setSaleProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [heroBanner] = useState(0);
 
-  const scrollRight = () => {
-    scrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' });
-  };
+  useEffect(() => {
+    getSaleProducts()
+      .then(setSaleProducts)
+      .finally(() => setLoading(false));
+  }, []);
 
-  const handleProductClick = (product: Product) => {
-    console.log('Navigate to product:', product.id);
-  };
+  const scrollRight = () => scrollRef.current?.scrollBy({ left: 240, behavior: 'smooth' });
 
   return (
     <div className={styles.page}>
-      {/* Hero Banner */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <h1 className={styles.heroTitle}>The best tech in one place!</h1>
           <p className={styles.heroSubtitle}>For the best price too!</p>
           <div className={styles.heroCtas}>
-            <button className={styles.ctaPrimary}>
-              View Sales <span>›</span>
-            </button>
+            <button className={styles.ctaPrimary}>View Sales <span>›</span></button>
             <button className={styles.ctaSecondary}>Explore Categories</button>
           </div>
         </div>
         <div className={styles.heroDots}>
-          {[0, 1, 2, 3, 4, 5].map(i => (
+          {[0,1,2,3,4,5].map(i => (
             <span key={i} className={`${styles.dot} ${i === heroBanner ? styles.dotActive : ''}`} />
           ))}
         </div>
       </section>
 
-      {/* Feature Cards */}
       <section className={styles.features}>
         <h2 className={styles.featuresTitle}>Check some of these things out!</h2>
         <div className={styles.featureGrid}>
@@ -98,28 +95,23 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Today's Items on Sale */}
       <section className={styles.saleSection}>
         <div className={styles.saleSectionInner}>
           <h2 className={styles.saleTitle}>Today's items on sale</h2>
           <div className={styles.saleScrollWrapper}>
             <div className={styles.saleScroll} ref={scrollRef}>
-              {saleProducts.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onClick={handleProductClick}
-                />
-              ))}
+              {loading
+                ? <p style={{ padding: '1rem', color: '#999' }}>Loading...</p>
+                : saleProducts.map(product => (
+                    <ProductCard key={product.id} product={product} onClick={() => {}} />
+                  ))
+              }
             </div>
-            <button className={styles.scrollBtn} onClick={scrollRight} aria-label="Scroll right">
-              ›
-            </button>
+            <button className={styles.scrollBtn} onClick={scrollRight} aria-label="Scroll right">›</button>
           </div>
         </div>
       </section>
 
-      {/* ── Floating Chat Widget ── */}
       <ChatWidget />
     </div>
   );

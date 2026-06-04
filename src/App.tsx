@@ -1,16 +1,20 @@
 // src/App.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CartProvider }      from './context/CartContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import { ChatProvider }      from './context/ChatContext';
 import LoginPage             from './pages/Login/LoginPage';
+import AuthCallbackPage      from './pages/AuthCallback/AuthCallbackPage';
 import Home                  from './pages/Home/Home';
 import SearchResultsPage     from './components/SearchResultsPage/SearchResultsPage';
 import ProductDetailPage     from './pages/ProductDetailPage/ProductDetailPage';
 import SellerRegister        from './pages/SellerRegister/SellerRegister';
 import SellerHome            from './pages/SellerHome/SellerHome';
 import Navbar                from './components/Navbar/Navbar';
+import { getCurrentUser }    from './services/authService';
+import { supabase }          from './lib/supabaseClient';
+import type { User }         from './types';
 
 const AppLayout: React.FC = () => (
   <>
@@ -26,25 +30,91 @@ const AppLayout: React.FC = () => (
 );
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser]       = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    // 1. Al arrancar: verificar sesión guardada en localStorage por Supabase
+    getCurrentUser().then(u => {
+      if (mounted) {
+        setUser(u);
+        setLoading(false);
+      }
+    });
+
+    // 2. Escuchar cambios futuros (login, logout, token renovado)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+      if (!mounted) return;
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        const u = await getCurrentUser();
+        if (mounted) setUser(u);
+      } else if (event === 'SIGNED_OUT') {
+        if (mounted) setUser(null);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  if (loading) return (
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <div style={{
+        width: 36, height: 36,
+        border: '3px solid #e5e5e5',
+        borderTop: '3px solid #1a1a1a',
+        borderRadius: '50%',
+        animation: 'spin 0.8s linear infinite',
+      }}/>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
 
   return (
     <BrowserRouter>
       <CartProvider>
         <FavoritesProvider>
-          <ChatProvider>          {/* ← ahora envuelve TODO incluyendo SellerHome */}
+          <ChatProvider>
             <Routes>
-              {/* SellerHome: standalone (sin Navbar de comprador) pero SÍ con ChatProvider */}
+
+              {/* Callback OAuth — siempre accesible */}
+              <Route
+                path="/auth/callback"
+                element={<AuthCallbackPage onSuccess={setUser} />}
+              />
+
+              {/* SellerHome standalone */}
               <Route path="/seller/home" element={<SellerHome />} />
 
+              {/* Login: si ya hay sesión va directo al home */}
+              <Route
+                path="/login"
+                element={
+                  user
+                    ? <Navigate to="/" replace />
+                    : <LoginPage />
+                }
+              />
+
+              {/* Todo lo demás: requiere sesión */}
               <Route
                 path="*"
                 element={
-                  !isAuthenticated
-                    ? <LoginPage onSuccess={() => setIsAuthenticated(true)} />
-                    : <AppLayout />
+                  user
+                    ? <AppLayout />
+                    : <LoginPage />
                 }
               />
+
             </Routes>
           </ChatProvider>
         </FavoritesProvider>

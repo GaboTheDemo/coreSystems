@@ -4,12 +4,14 @@
 // AUTH
 // =========================
 
+// Agrega role al User
 export interface User {
   id: string;
   name: string;
   email: string;
   avatar?: string;
   phone?: string;
+  role?: 'buyer' | 'seller';  // ← agregar
   createdAt?: string;
 }
 
@@ -20,7 +22,7 @@ export interface AuthState {
   error: string | null;
 }
 
-export type AuthProvider = "google" | "facebook" | "apple" | "email";
+export type AuthProvider = "google" | "facebook" | "apple";
 
 export interface LoginFormData {
   identifier: string;
