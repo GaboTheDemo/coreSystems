@@ -6,8 +6,10 @@ import CategoryDropdown from '../CategoryDropdown/CategoryDropdown';
 import SearchOverlay from '../SearchOverlay/SearchOverlay';
 import CartDrawer from '../CartDrawer/CartDrawer';
 import FavoritesDrawer from '../FavoritesDrawer/FavoritesDrawer';
+import AvatarPickerModal, { AVATARS } from '../AvatarPickerModal/AvatarPickerModal';
 import { useCart } from '../../context/CartContext';
 import { useFavorites } from '../../context/FavoritesContext';
+import { supabase } from '../../lib/supabaseClient';
 import type { CategoryDropdownData } from '../../types';
 import type { SearchProduct } from '../../services/searchService';
 import styles from './Navbar.module.css';
@@ -18,23 +20,38 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
   const navigate = useNavigate();
-  const { totalItems, toggleCart } = useCart();
+  const { totalItems, toggleCart }                   = useCart();
   const { totalFavorites, toggleDrawer: toggleFavorites } = useFavorites();
 
-  const [categories, setCategories] = useState<CategoryDropdownData[]>([]);
-  const [searchValue, setSearchValue] = useState('');
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [categories, setCategories]     = useState<CategoryDropdownData[]>([]);
+  const [searchValue, setSearchValue]   = useState('');
+  const [searchOpen, setSearchOpen]     = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [avatarOpen, setAvatarOpen]     = useState(false);
+  const [currentAvatar, setCurrentAvatar] = useState<string>('');
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef       = useRef<HTMLInputElement>(null);
   const categoryNavRef = useRef<HTMLElement>(null);
 
-  // Carga las categorías al montar
   useEffect(() => {
     getAllCategories().then(setCategories).catch(console.error);
   }, []);
 
-  // Cierra el dropdown cuando se hace clic fuera
+  // Cargar avatar actual del usuario
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => {
+          if (data?.avatar_url) setCurrentAvatar(data.avatar_url);
+        });
+    });
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (categoryNavRef.current && !categoryNavRef.current.contains(event.target as Node)) {
@@ -47,7 +64,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
 
   const activeData = categories.find(c => c.id === activeCategory);
 
-  const openSearch = () => setSearchOpen(true);
+  const openSearch  = () => setSearchOpen(true);
   const closeSearch = () => setSearchOpen(false);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,9 +94,10 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
     setActiveCategory(prev => (prev === categoryId ? null : categoryId));
   };
 
-  const handleDropdownItemClick = () => {
-    setActiveCategory(null);
-  };
+  const handleDropdownItemClick = () => setActiveCategory(null);
+
+  // Encuentra el SVG del avatar actual para mostrarlo en el botón
+  const currentAvatarData = AVATARS.find(a => a.id === currentAvatar);
 
   return (
     <>
@@ -113,6 +131,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
           </form>
 
           <nav className={styles.topActions}>
+            {/* Favoritos */}
             <button
               className={styles.iconBtn}
               aria-label={`Favoritos (${totalFavorites})`}
@@ -127,6 +146,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
               )}
             </button>
 
+            {/* Seller */}
             <button
               className={styles.iconBtn}
               aria-label="Seller Account"
@@ -137,6 +157,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
               </svg>
             </button>
 
+            {/* Carrito */}
             <button
               className={styles.iconBtn}
               aria-label={`Carrito (${totalItems} productos)`}
@@ -149,6 +170,22 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
               </svg>
               {totalItems > 0 && (
                 <span className={styles.cartBadge}>{totalItems > 99 ? '99+' : totalItems}</span>
+              )}
+            </button>
+
+            {/* Avatar picker */}
+            <button
+              className={styles.avatarBtn}
+              aria-label="Change avatar"
+              onClick={() => setAvatarOpen(true)}
+              style={currentAvatarData ? { background: currentAvatarData.bg } : undefined}
+            >
+              {currentAvatarData ? (
+                <div className={styles.avatarBtnSvg}>{currentAvatarData.svg}</div>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
               )}
             </button>
           </nav>
@@ -165,8 +202,8 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
               <button
                 className={[
                   styles.catItem,
-                  cat.id === 'trending'  ? styles.trending : '',
-                  cat.id === 'on-sale'   ? styles.onSale   : '',
+                  cat.id === 'trending' ? styles.trending : '',
+                  cat.id === 'on-sale'  ? styles.onSale   : '',
                   activeCategory === cat.id ? styles.catItemActive : '',
                 ].join(' ')}
                 onClick={() => handleCategoryClick(cat.id)}
@@ -198,6 +235,14 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
 
       <CartDrawer />
       <FavoritesDrawer />
+
+      {avatarOpen && (
+        <AvatarPickerModal
+          currentAvatar={currentAvatar}
+          onClose={() => setAvatarOpen(false)}
+          onSaved={setCurrentAvatar}
+        />
+      )}
     </>
   );
 };
