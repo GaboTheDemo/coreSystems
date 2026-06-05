@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getProductBySlug, getProductsByCategory } from '../../services/productService';
 import type { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
+import ReviewsSection from '../../components/ReviewsSection/ReviewsSection';
 import styles from './Productdetailpage.module.css';
 
 function formatPrice(n: number) {
@@ -58,11 +59,11 @@ const ProductDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { addItem, openCart } = useCart();
 
-  const [product, setProduct]           = useState<Product | null>(null);
-  const [related, setRelated]           = useState<Product[]>([]);
-  const [loading, setLoading]           = useState(true);
-  const [quantity, setQuantity]         = useState(1);
-  const [activeThumb, setActiveThumb]   = useState(0);
+  const [product, setProduct]             = useState<Product | null>(null);
+  const [related, setRelated]             = useState<Product[]>([]);
+  const [loading, setLoading]             = useState(true);
+  const [quantity, setQuantity]           = useState(1);
+  const [activeThumb, setActiveThumb]     = useState(0);
   const [specsExpanded, setSpecsExpanded] = useState(false);
 
   useEffect(() => {
@@ -95,13 +96,13 @@ const ProductDetailPage: React.FC = () => {
 
   const specs = product.specs || {};
   const specSections: SpecSectionProps[] = [];
-  if (specs.screenSize) specSections.push({ title: 'Pantalla', lines: [`Tamaño: ${specs.screenSize}`, specs.screenType ?? 'Pantalla Super Retina XDR OLED', specs.refreshRate ?? 'Tecnología ProMotion hasta 120 Hz'] });
-  if (specs.processor)  specSections.push({ title: 'Procesador', lines: [specs.processor] });
-  if (specs.ram)        specSections.push({ title: 'Memoria RAM', lines: [`${specs.ram} de RAM`] });
-  if (specs.storage)    specSections.push({ title: 'Almacenamiento', lines: [specs.storage] });
-  if (specs.camera)     specSections.push({ title: 'Cámaras', lines: [`Cámara principal ${specs.camera}`, specs.videoRecording ?? 'Grabación 4K', specs.frontCamera ?? 'Cámara frontal 12 MP'] });
-  if (specs.battery)    specSections.push({ title: 'Batería', lines: [specs.battery, specs.charging ?? 'Carga rápida e inalámbrica'] });
-  if (specs.connectivity) specSections.push({ title: 'Conectividad', lines: [specs.connectivity] });
+  if (specs.screenSize)   specSections.push({ title: 'Pantalla',       lines: [`Tamaño: ${specs.screenSize}`, specs.screenType ?? 'Pantalla Super Retina XDR OLED', specs.refreshRate ?? 'Tecnología ProMotion hasta 120 Hz'] });
+  if (specs.processor)    specSections.push({ title: 'Procesador',     lines: [specs.processor] });
+  if (specs.ram)          specSections.push({ title: 'Memoria RAM',    lines: [`${specs.ram} de RAM`] });
+  if (specs.storage)      specSections.push({ title: 'Almacenamiento', lines: [specs.storage] });
+  if (specs.camera)       specSections.push({ title: 'Cámaras',        lines: [`Cámara principal ${specs.camera}`, specs.videoRecording ?? 'Grabación 4K', specs.frontCamera ?? 'Cámara frontal 12 MP'] });
+  if (specs.battery)      specSections.push({ title: 'Batería',        lines: [specs.battery, specs.charging ?? 'Carga rápida e inalámbrica'] });
+  if (specs.connectivity) specSections.push({ title: 'Conectividad',   lines: [specs.connectivity] });
 
   const visibleSpecs = specsExpanded ? specSections : specSections.slice(0, 2);
 
@@ -123,7 +124,11 @@ const ProductDetailPage: React.FC = () => {
       <section className={styles.hero}>
         <div className={styles.thumbCol}>
           {thumbs.map((src, i) => (
-            <button key={i} className={`${styles.thumb} ${activeThumb === i ? styles.thumbActive : ''}`} onClick={() => setActiveThumb(i)}>
+            <button
+              key={i}
+              className={`${styles.thumb} ${activeThumb === i ? styles.thumbActive : ''}`}
+              onClick={() => setActiveThumb(i)}
+            >
               <img src={src} alt={`${product.name} view ${i + 1}`} />
             </button>
           ))}
@@ -202,11 +207,21 @@ const ProductDetailPage: React.FC = () => {
           <h2 className={styles.relatedTitle}>Más Productos</h2>
           <div className={styles.relatedGrid}>
             {related.map(p => (
-              <RelatedCard key={p.id} product={p} onClick={() => navigate(`/product/${p.slug ?? p.id}`)} />
+              <RelatedCard
+                key={p.id}
+                product={p}
+                onClick={() => navigate(`/product/${p.slug ?? p.id}`)}
+              />
             ))}
           </div>
         </section>
       )}
+
+      <hr className={styles.divider} />
+
+      {/* ── Reviews ── */}
+      <ReviewsSection productId={String(product.id)} />
+
     </div>
   );
 };
