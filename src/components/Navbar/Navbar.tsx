@@ -10,34 +10,37 @@ import AvatarPickerModal, { AVATARS } from '../AvatarPickerModal/AvatarPickerMod
 import { useCart } from '../../context/CartContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import { supabase } from '../../lib/supabaseClient';
+import { logout } from '../../services/authService';
 import type { CategoryDropdownData } from '../../types';
 import type { SearchProduct } from '../../services/searchService';
 import styles from './Navbar.module.css';
 
 interface NavbarProps {
   onLogoClick?: () => void;
+  onLogout?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ onLogoClick, onLogout }) => {
   const navigate = useNavigate();
-  const { totalItems, toggleCart }                   = useCart();
+  const { totalItems, toggleCart }                        = useCart();
   const { totalFavorites, toggleDrawer: toggleFavorites } = useFavorites();
 
-  const [categories, setCategories]     = useState<CategoryDropdownData[]>([]);
-  const [searchValue, setSearchValue]   = useState('');
-  const [searchOpen, setSearchOpen]     = useState(false);
+  const [categories, setCategories]         = useState<CategoryDropdownData[]>([]);
+  const [searchValue, setSearchValue]       = useState('');
+  const [searchOpen, setSearchOpen]         = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [avatarOpen, setAvatarOpen]     = useState(false);
-  const [currentAvatar, setCurrentAvatar] = useState<string>('');
+  const [avatarOpen, setAvatarOpen]         = useState(false);
+  const [currentAvatar, setCurrentAvatar]   = useState<string>('');
+  const [userMenuOpen, setUserMenuOpen]     = useState(false);
 
   const inputRef       = useRef<HTMLInputElement>(null);
   const categoryNavRef = useRef<HTMLElement>(null);
+  const userMenuRef    = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getAllCategories().then(setCategories).catch(console.error);
   }, []);
 
-  // Cargar avatar actual del usuario
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
@@ -56,6 +59,9 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
     const handleClickOutside = (event: MouseEvent) => {
       if (categoryNavRef.current && !categoryNavRef.current.contains(event.target as Node)) {
         setActiveCategory(null);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -96,7 +102,13 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
 
   const handleDropdownItemClick = () => setActiveCategory(null);
 
-  // Encuentra el SVG del avatar actual para mostrarlo en el botón
+  const handleLogout = async () => {
+    setUserMenuOpen(false);
+    await logout();
+    onLogout?.();
+    navigate('/login', { replace: true });
+  };
+
   const currentAvatarData = AVATARS.find(a => a.id === currentAvatar);
 
   return (
@@ -173,21 +185,51 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick }) => {
               )}
             </button>
 
-            {/* Avatar picker */}
-            <button
-              className={styles.avatarBtn}
-              aria-label="Change avatar"
-              onClick={() => setAvatarOpen(true)}
-              style={currentAvatarData ? { background: currentAvatarData.bg } : undefined}
-            >
-              {currentAvatarData ? (
-                <div className={styles.avatarBtnSvg}>{currentAvatarData.svg}</div>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-                </svg>
+            {/* Avatar + menú desplegable */}
+            <div ref={userMenuRef} style={{ position: 'relative' }}>
+              <button
+                className={styles.avatarBtn}
+                aria-label="User menu"
+                onClick={() => setUserMenuOpen(o => !o)}
+                style={currentAvatarData ? { background: currentAvatarData.bg } : undefined}
+              >
+                {currentAvatarData ? (
+                  <div className={styles.avatarBtnSvg}>{currentAvatarData.svg}</div>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                  </svg>
+                )}
+              </button>
+
+              {userMenuOpen && (
+                <div className={styles.userMenu}>
+                  <button
+                    className={styles.userMenuItem}
+                    onClick={() => { setUserMenuOpen(false); setAvatarOpen(true); }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                    </svg>
+                    Change avatar
+                  </button>
+
+                  <div className={styles.userMenuDivider} />
+
+                  <button
+                    className={`${styles.userMenuItem} ${styles.userMenuItemLogout}`}
+                    onClick={handleLogout}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                      <polyline points="16 17 21 12 16 7"/>
+                      <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Sign out
+                  </button>
+                </div>
               )}
-            </button>
+            </div>
           </nav>
         </div>
 

@@ -20,12 +20,16 @@ import { getCurrentUser }      from './services/authService';
 import { supabase }            from './lib/supabaseClient';
 import type { User }           from './types';
 
-const AppLayout: React.FC = () => {
+interface AppLayoutProps {
+  onLogout: () => void;
+}
+
+const AppLayout: React.FC<AppLayoutProps> = ({ onLogout }) => {
   const { currentUserRole } = useChat();
 
   return (
     <>
-      <Navbar />
+      <Navbar onLogout={onLogout} />
       <Routes>
         <Route path="/"                  element={<Home />} />
         <Route path="/search"            element={<SearchResultsPage />} />
@@ -83,19 +87,19 @@ const App: React.FC = () => {
     </div>
   );
 
+  const handleLogout = () => setUser(null);
+
   return (
     <BrowserRouter>
       <CartProvider>
         <FavoritesProvider>
           <ChatProvider>
             <Routes>
-              {/* OAuth callback — siempre accesible */}
               <Route
                 path="/auth/callback"
                 element={<AuthCallbackPage onSuccess={setUser} />}
               />
 
-              {/* Seller standalone (sin Navbar) */}
               <Route
                 path="/seller/home"
                 element={user ? <SellerHome /> : <Navigate to="/login" replace />}
@@ -105,16 +109,18 @@ const App: React.FC = () => {
                 element={user ? <SellerAddProduct /> : <Navigate to="/login" replace />}
               />
 
-              {/* Login: redirige si ya hay sesión */}
               <Route
                 path="/login"
                 element={user ? <Navigate to="/" replace /> : <LoginPage />}
               />
 
-              {/* Todo lo demás: requiere sesión */}
               <Route
                 path="*"
-                element={user ? <AppLayout /> : <LoginPage />}
+                element={
+                  user
+                    ? <AppLayout onLogout={handleLogout} />
+                    : <LoginPage />
+                }
               />
             </Routes>
           </ChatProvider>

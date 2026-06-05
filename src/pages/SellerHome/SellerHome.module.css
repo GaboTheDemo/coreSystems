@@ -448,3 +448,130 @@
   .featureGrid { grid-template-columns: 1fr 1fr; }
   .main    { padding: 20px 16px 40px; }
 }
+/* ── Recent Activity table ── */
+.activityHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.addProductLink {
+  background: none;
+  border: none;
+  color: #3ecfcf;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.addProductLink:hover { background: rgba(62,207,207,0.08); }
+
+.productsTable {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e8edf2;
+}
+
+.productsTableHead {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.6fr 1fr 1fr;
+  gap: 0;
+  padding: 10px 16px;
+  background: #f4f7fa;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.productsTableRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.6fr 1fr 1fr;
+  align-items: center;
+  gap: 0;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  font-size: 13px;
+  color: #333;
+  transition: background 0.12s;
+}
+.productsTableRow:hover { background: #f9fbfd; }
+
+.productCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.productThumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+  border: 1px solid #eee;
+}
+
+.productThumbPlaceholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.productName {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.productCategory {
+  color: #666;
+  text-transform: capitalize;
+}
+
+.productPrice { font-weight: 600; color: #1a1a1a; }
+
+.productStock { font-weight: 600; }
+.stockLow  { color: #f59e0b; }
+.stockOut  { color: #ef4444; }
+
+.productBadges { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.badgeSale {
+  background: #fff0f0;
+  color: #e53935;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+.badgeTrending {
+  background: #f0fffe;
+  color: #3ecfcf;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+.badgeActive {
+  background: #f0faf0;
+  color: #43a047;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.productDate { color: #999; font-size: 12px; }
