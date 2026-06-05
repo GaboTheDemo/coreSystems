@@ -93,13 +93,23 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick, onLogout }) => {
 
   const handleProductClick = (product: SearchProduct) => {
     closeSearch();
-    navigate(`/search?q=${encodeURIComponent(product.name)}`);
+    navigate(`/product/${product.id}`);
   };
 
   const handleCategoryClick = (categoryId: string) => {
+    // Trending y On Sale van directo a búsqueda, no abren dropdown
+    if (categoryId === 'trending') {
+      navigate('/search?sort=relevance&trending=true');
+      return;
+    }
+    if (categoryId === 'on-sale') {
+      navigate('/search?onSale=true');
+      return;
+    }
     setActiveCategory(prev => (prev === categoryId ? null : categoryId));
   };
 
+  // Solo cierra el dropdown — la navegación la maneja CategoryDropdown internamente
   const handleDropdownItemClick = () => setActiveCategory(null);
 
   const handleLogout = async () => {
@@ -214,7 +224,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogoClick, onLogout }) => {
                     Change avatar
                   </button>
 
-                  <div className={styles.userMenuDivider} />
+                  <div className={styles.userMenuDivider}/>
 
                   <button
                     className={`${styles.userMenuItem} ${styles.userMenuItemLogout}`}
