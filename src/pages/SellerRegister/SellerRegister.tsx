@@ -48,34 +48,55 @@ const SellerRegister: React.FC = () => {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <div style={{ marginBottom: '8px' }}>
+
+        <div style={{ alignSelf: 'flex-start', marginBottom: '8px' }}>
           <BackButton fallback="/" />
         </div>
+
         <div className={styles.header}>
           <div className={styles.iconWrap}>
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="#1a1a1a" strokeWidth="1.8" strokeLinejoin="round"/>
+              <polyline points="9 22 9 12 15 12 15 22" stroke="#1a1a1a" strokeWidth="1.8" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h1 className={styles.title}>Seller Account</h1>
-          <p className={styles.subtitle}>Create your store on CoreSystems</p>
+          <h1 className={styles.title}>Create your store</h1>
+          <p className={styles.subtitle}>Start selling on CoreSystems today</p>
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.row}>
             <div className={styles.field}>
-              <label className={styles.label}>Username</label>
-              <input className={`${styles.input} ${errors.username ? styles.inputError : ''}`} type="text" name="username" placeholder="your_username" value={formData.username} onChange={handleChange} autoComplete="username" />
+              <label className={styles.label} htmlFor="username">Username</label>
+              <input
+                id="username"
+                className={`${styles.input} ${errors.username ? styles.inputError : ''}`}
+                type="text"
+                name="username"
+                placeholder="your_username"
+                value={formData.username}
+                onChange={handleChange}
+                autoComplete="username"
+              />
               {errors.username && <span className={styles.error}>{errors.username}</span>}
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Store Name</label>
-              <input className={`${styles.input} ${errors.storeName ? styles.inputError : ''}`} type="text" name="storeName" placeholder="My Tech Store" value={formData.storeName} onChange={handleChange} />
+              <label className={styles.label} htmlFor="storeName">Store Name</label>
+              <input
+                id="storeName"
+                className={`${styles.input} ${errors.storeName ? styles.inputError : ''}`}
+                type="text"
+                name="storeName"
+                placeholder="My Tech Store"
+                value={formData.storeName}
+                onChange={handleChange}
+              />
               {errors.storeName && <span className={styles.error}>{errors.storeName}</span>}
             </div>
           </div>
-          {apiError && <p className={styles.error} style={{ textAlign: 'center' }}>{apiError}</p>}
+
+          {apiError && <p className={styles.error} style={{ textAlign: 'center', paddingLeft: 0 }}>{apiError}</p>}
+
           <button className={styles.submitBtn} type="submit" disabled={loading}>
             {loading ? <span className={styles.spinner} /> : 'Create Seller Account'}
           </button>
@@ -85,8 +106,12 @@ const SellerRegister: React.FC = () => {
           Already have an account?{' '}
           <button className={styles.linkBtn} onClick={() => navigate('/login')}>Sign in</button>
         </p>
+
         <p className={styles.legal}>
-          By continuing, you agree to our <a href="#" className={styles.legalLink}>Terms of Use</a> and authorize the processing of your personal data in accordance with <a href="#" className={styles.legalLink}>Privacy Policy</a>.
+          By continuing, you agree to our{' '}
+          <a href="#" className={styles.legalLink}>Terms of Use</a> and authorize
+          the processing of your personal data in accordance with{' '}
+          <a href="#" className={styles.legalLink}>Privacy Policy</a>.
         </p>
       </div>
     </div>
