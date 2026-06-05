@@ -12,6 +12,7 @@ import SearchResultsPage       from './components/SearchResultsPage/SearchResult
 import ProductDetailPage       from './pages/ProductDetailPage/ProductDetailPage';
 import SellerRegister          from './pages/SellerRegister/SellerRegister';
 import SellerHome              from './pages/SellerHome/SellerHome';
+import SellerAddProduct        from './pages/SellerAddProduct/SellerAddProduct';
 import Navbar                  from './components/Navbar/Navbar';
 import SellerChatWidget        from './components/SellerChatWidget/SellerChatWidget';
 import ChatWidget              from './components/ChatWidget/ChatWidget';
@@ -19,12 +20,6 @@ import { getCurrentUser }      from './services/authService';
 import { supabase }            from './lib/supabaseClient';
 import type { User }           from './types';
 
-/**
- * Layout principal para usuarios autenticados.
- * El SellerChatWidget se monta aquí: el contexto ya sabe si el usuario
- * es seller o buyer, así que el widget simplemente no se renderiza si es buyer
- * (o si no hay tienda asociada).
- */
 const AppLayout: React.FC = () => {
   const { currentUserRole } = useChat();
 
@@ -39,7 +34,6 @@ const AppLayout: React.FC = () => {
         <Route path="*"                  element={<Navigate to="/" replace />} />
       </Routes>
 
-      {/* Widget de chat según rol */}
       {currentUserRole === 'seller' && <SellerChatWidget />}
       {currentUserRole === 'buyer'  && <ChatWidget />}
     </>
@@ -93,11 +87,6 @@ const App: React.FC = () => {
     <BrowserRouter>
       <CartProvider>
         <FavoritesProvider>
-          {/*
-           * ChatProvider envuelve TODO lo que necesita el chat.
-           * AppLayout consume useChat() para saber el rol del usuario
-           * y montar el widget correcto.
-           */}
           <ChatProvider>
             <Routes>
               {/* OAuth callback — siempre accesible */}
@@ -106,8 +95,15 @@ const App: React.FC = () => {
                 element={<AuthCallbackPage onSuccess={setUser} />}
               />
 
-              {/* SellerHome standalone (sin Navbar) */}
-              <Route path="/seller/home" element={<SellerHome />} />
+              {/* Seller standalone (sin Navbar) */}
+              <Route
+                path="/seller/home"
+                element={user ? <SellerHome /> : <Navigate to="/login" replace />}
+              />
+              <Route
+                path="/seller/add-product"
+                element={user ? <SellerAddProduct /> : <Navigate to="/login" replace />}
+              />
 
               {/* Login: redirige si ya hay sesión */}
               <Route
