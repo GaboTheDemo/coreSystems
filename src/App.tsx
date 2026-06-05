@@ -8,7 +8,7 @@ import { useChat }             from './context/ChatContext';
 import LoginPage               from './pages/Login/LoginPage';
 import AuthCallbackPage        from './pages/AuthCallback/AuthCallbackPage';
 import Home                    from './pages/Home/Home';
-import SearchResultsPage       from './components/SearchResultsPage/SearchResultsPage';
+import SearchResultsPage       from './pages/SearchResultsPage/SearchResultsPage';
 import ProductDetailPage       from './pages/ProductDetailPage/ProductDetailPage';
 import SellerRegister          from './pages/SellerRegister/SellerRegister';
 import SellerHome              from './pages/SellerHome/SellerHome';

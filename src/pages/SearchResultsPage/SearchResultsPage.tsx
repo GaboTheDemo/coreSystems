@@ -5,9 +5,9 @@ import { searchProductsFull } from '../../services/searchService';
 import { useCart } from '../../context/CartContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import type { Product, SearchFilters, SortOption, SearchResult } from '../../types';
+import BackButton from '../../components/BackButton/BackButton';
 import styles from './SearchResultsPage.module.css';
 
-// ─── ProductCard ──────────────────────────────────────────────────────────────
 interface ProductCardProps {
   product: Product;
   onProductClick: (product: Product) => void;
@@ -105,7 +105,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick }) =>
   );
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 const COLOR_MAP: Record<string, string> = {
   Black: '#1a1a1a', White: '#f5f5f5', Silver: '#c0c0c0',
   Blue: '#2563eb',  Purple: '#7c3aed', Orange: '#ea580c',
@@ -121,7 +120,6 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'newest',     label: 'Newest'            },
 ];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 const SearchResultsPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -137,10 +135,8 @@ const SearchResultsPage: React.FC = () => {
 
   const [customMin, setCustomMin] = useState(minPrice?.toString() ?? '');
   const [customMax, setCustomMax] = useState(maxPrice?.toString() ?? '');
-
-  // Estado para los resultados async
-  const [result, setResult]   = useState<SearchResult>({ products: [], total: 0, filters: { brands: [], colors: [], priceRanges: [] } });
-  const [loading, setLoading] = useState(false);
+  const [result, setResult]       = useState<SearchResult>({ products: [], total: 0, filters: { brands: [], colors: [], priceRanges: [] } });
+  const [loading, setLoading]     = useState(false);
 
   const filters: SearchFilters = useMemo(() => ({
     query, brand, category, sortBy, minPrice, maxPrice,
@@ -148,7 +144,6 @@ const SearchResultsPage: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [query, brand, category, sortBy, minPrice, maxPrice, colorsParam]);
 
-  // Llama a Supabase cuando cambian los filtros
   useEffect(() => {
     setLoading(true);
     searchProductsFull(filters)
@@ -263,6 +258,7 @@ const SearchResultsPage: React.FC = () => {
 
       <main className={styles.results}>
         <div className={styles.resultsHeader}>
+          <BackButton label="Inicio" fallback="/" />
           <p className={styles.resultsCount}>
             {loading ? 'Searching...' : <>Showing <strong>{products.length}</strong> of <strong>{total}</strong> results{query && <> for <em>"{query}"</em></>}</>}
           </p>
@@ -314,4 +310,3 @@ const SearchResultsPage: React.FC = () => {
 };
 
 export default SearchResultsPage;
-

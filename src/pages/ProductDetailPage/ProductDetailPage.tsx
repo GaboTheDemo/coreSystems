@@ -5,6 +5,7 @@ import { getProductBySlug, getProductsByCategory } from '../../services/productS
 import type { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import ReviewsSection from '../../components/ReviewsSection/ReviewsSection';
+import BackButton from '../../components/BackButton/BackButton';
 import styles from './Productdetailpage.module.css';
 
 function formatPrice(n: number) {
@@ -35,16 +36,9 @@ const RelatedCard: React.FC<RelatedCardProps> = ({ product, onClick }) => (
 interface AddToCartBtnProps { onAdd: () => void; }
 const AddToCartBtn: React.FC<AddToCartBtnProps> = ({ onAdd }) => {
   const [added, setAdded] = useState(false);
-  const handleClick = () => {
-    onAdd();
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
-  };
+  const handleClick = () => { onAdd(); setAdded(true); setTimeout(() => setAdded(false), 1800); };
   return (
-    <button
-      className={`${styles.addToCartBtn} ${added ? styles.addToCartBtnAdded : ''}`}
-      onClick={handleClick}
-    >
+    <button className={`${styles.addToCartBtn} ${added ? styles.addToCartBtnAdded : ''}`} onClick={handleClick}>
       {added ? (
         <><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6 9 17l-5-5"/></svg>¡Agregado!</>
       ) : (
@@ -84,8 +78,8 @@ const ProductDetailPage: React.FC = () => {
 
   if (!product) return (
     <div className={styles.notFound}>
+      <BackButton />
       <p>Product not found.</p>
-      <button className={styles.backBtn} onClick={() => navigate(-1)}>← Go back</button>
     </div>
   );
 
@@ -105,12 +99,13 @@ const ProductDetailPage: React.FC = () => {
   if (specs.connectivity) specSections.push({ title: 'Conectividad',   lines: [specs.connectivity] });
 
   const visibleSpecs = specsExpanded ? specSections : specSections.slice(0, 2);
-
   const handleAddToCart = () => { addItem(product, quantity); openCart(); };
   const handleBuyNow    = () => { addItem(product, quantity); openCart(); };
 
   return (
     <div className={styles.page}>
+      <BackButton />
+
       <nav className={styles.breadcrumb}>
         <button onClick={() => navigate('/')}>Home</button>
         <span>›</span>
@@ -124,21 +119,15 @@ const ProductDetailPage: React.FC = () => {
       <section className={styles.hero}>
         <div className={styles.thumbCol}>
           {thumbs.map((src, i) => (
-            <button
-              key={i}
-              className={`${styles.thumb} ${activeThumb === i ? styles.thumbActive : ''}`}
-              onClick={() => setActiveThumb(i)}
-            >
+            <button key={i} className={`${styles.thumb} ${activeThumb === i ? styles.thumbActive : ''}`} onClick={() => setActiveThumb(i)}>
               <img src={src} alt={`${product.name} view ${i + 1}`} />
             </button>
           ))}
         </div>
-
         <div className={styles.mainImageWrap}>
           {discount > 0 && <span className={styles.discountBadge}>-{discount}%</span>}
           <img src={thumbs[activeThumb]} alt={product.name} className={styles.mainImage} />
         </div>
-
         <div className={styles.purchasePanel}>
           <h1 className={styles.productName}>{product.name}</h1>
           {product.rating !== undefined && (
@@ -207,21 +196,14 @@ const ProductDetailPage: React.FC = () => {
           <h2 className={styles.relatedTitle}>Más Productos</h2>
           <div className={styles.relatedGrid}>
             {related.map(p => (
-              <RelatedCard
-                key={p.id}
-                product={p}
-                onClick={() => navigate(`/product/${p.slug ?? p.id}`)}
-              />
+              <RelatedCard key={p.id} product={p} onClick={() => navigate(`/product/${p.slug ?? p.id}`)} />
             ))}
           </div>
         </section>
       )}
 
       <hr className={styles.divider} />
-
-      {/* ── Reviews ── */}
       <ReviewsSection productId={String(product.id)} />
-
     </div>
   );
 };
